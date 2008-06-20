@@ -3,19 +3,9 @@
  */
 package net.vidageek.crawler;
 
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import net.vidageek.crawler.exception.CrawlerException;
-
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
 
 /**
  * @author jonasabreu
@@ -24,8 +14,6 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class PageCrawler {
 
 	private final String beginUrl;
-
-	private static final HttpClient client = new HttpClient();
 
 	private static final Set<String> visitedUrls = new HashSet<String>();
 
@@ -50,36 +38,15 @@ public class PageCrawler {
 
 		if (!visitedUrls.contains(this.beginUrl)) {
 			visitedUrls.add(this.beginUrl);
-			String page = this.downloadPage(this.beginUrl);
+			Page page = null;
 			visitor.visit(page);
-			List<String> links = this.recoverUrls(page);
+
+			List<String> links = page.getLinks();
 			for (String link : links) {
 				new PageCrawler(link).craw(visitor);
 			}
 
 		}
 
-	}
-
-	private List<String> recoverUrls(final String page) {
-		Pattern pattern = Pattern.compile("(?i)(?m)<\\s*?a.*?href=\"(.*?)\".*?>");
-		Matcher matcher = pattern.matcher(page);
-		List<String> list = new ArrayList<String>();
-		while (matcher.find()) {
-			list.add(matcher.group(1));
-		}
-		return list;
-	}
-
-	private String downloadPage(final String url) {
-		try {
-			GetMethod method = new GetMethod(url);
-			client.executeMethod(method);
-			return method.getResponseBodyAsString();
-		} catch (HttpException e) {
-			throw new CrawlerException("Error retrieving data from URL " + url);
-		} catch (IOException e) {
-			throw new CrawlerException("Error retrieving data from URL " + url);
-		}
 	}
 }

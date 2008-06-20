@@ -23,8 +23,4 @@ public class CrawlerException extends RuntimeException {
 		super(t);
 	}
 
-	public CrawlerException() {
-		super();
-	}
-
 }

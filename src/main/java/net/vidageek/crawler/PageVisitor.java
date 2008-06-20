@@ -9,7 +9,7 @@ package net.vidageek.crawler;
  */
 public interface PageVisitor {
 
-	void visit(String page);
+	void visit(Page page);
 
 	boolean followUrl(String url);
 
