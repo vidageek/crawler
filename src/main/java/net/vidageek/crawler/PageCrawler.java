@@ -17,7 +17,14 @@ public class PageCrawler {
 
 	private static final Set<String> visitedUrls = new HashSet<String>();
 
+	private final Downloader downloader;
+
 	public PageCrawler(final String beginUrl) {
+		this(beginUrl, new WebDownloader());
+	}
+
+	public PageCrawler(final String beginUrl, final Downloader downloader) {
+		this.downloader = downloader;
 		if (beginUrl == null) {
 			throw new IllegalArgumentException("beginUrl cannot be null");
 		}
@@ -38,12 +45,14 @@ public class PageCrawler {
 
 		if (!visitedUrls.contains(this.beginUrl)) {
 			visitedUrls.add(this.beginUrl);
-			Page page = null;
+			Page page = new Page(this.beginUrl, this.downloader);
 			visitor.visit(page);
 
 			List<String> links = page.getLinks();
 			for (String link : links) {
-				new PageCrawler(link).craw(visitor);
+				if (visitor.followUrl(link)) {
+					new PageCrawler(link, this.downloader).craw(visitor);
+				}
 			}
 
 		}
