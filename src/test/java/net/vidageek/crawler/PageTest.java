@@ -81,6 +81,6 @@ public class PageTest {
 		assertEquals(2, links.size());
 		assertEquals("test link", links.get(0));
 		assertEquals("test link2", links.get(1));
-
 	}
+
 }
