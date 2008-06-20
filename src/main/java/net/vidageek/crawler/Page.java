@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class Page {
 
 	private final String url;
-	private final Downloader downloader;
+	private final String content;
 
 	public Page(final String url, final Downloader downloader) {
 		if (url == null || url.trim().length() == 0) {
@@ -25,13 +25,13 @@ public class Page {
 			throw new IllegalArgumentException("downloader cannot be null");
 		}
 		this.url = url;
-		this.downloader = downloader;
+		this.content = downloader.get(this.url);
 	}
 
 	public List<String> getLinks() {
 		Pattern pattern = Pattern.compile("(?i)(?s)<\\s*?a.*?href=\"(.*?)\".*?>");
 
-		Matcher matcher = pattern.matcher(this.downloader.get(this.url));
+		Matcher matcher = pattern.matcher(this.content);
 
 		List<String> list = new ArrayList<String>();
 		while (matcher.find()) {
@@ -39,5 +39,13 @@ public class Page {
 		}
 		return list;
 
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public String getContent() {
+		return this.content;
 	}
 }
