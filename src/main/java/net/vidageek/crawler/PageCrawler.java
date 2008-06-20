@@ -15,8 +15,6 @@ public class PageCrawler {
 
 	private final String beginUrl;
 
-	private static final Set<String> visitedUrls = new HashSet<String>();
-
 	private final Downloader downloader;
 
 	public PageCrawler(final String beginUrl) {
@@ -38,24 +36,29 @@ public class PageCrawler {
 
 	}
 
-	public void craw(final PageVisitor visitor) {
+	private void craw(final PageVisitor visitor, final Set<String> visitedUrls) {
 		if (visitor == null) {
 			throw new NullPointerException("visitor cannot be null");
 		}
 
-		if (!visitedUrls.contains(this.beginUrl)) {
-			visitedUrls.add(this.beginUrl);
-			Page page = new Page(this.beginUrl, this.downloader);
+		if (!visitedUrls.contains(beginUrl)) {
+			visitedUrls.add(beginUrl);
+			Page page = new Page(beginUrl, downloader);
 			visitor.visit(page);
 
 			List<String> links = page.getLinks();
 			for (String link : links) {
 				if (visitor.followUrl(link)) {
-					new PageCrawler(link, this.downloader).craw(visitor);
+					new PageCrawler(link, downloader).craw(visitor);
 				}
 			}
 
 		}
+
+	}
+
+	public void craw(final PageVisitor visitor) {
+		craw(visitor, new HashSet<String>());
 
 	}
 }

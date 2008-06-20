@@ -17,53 +17,70 @@ public class PageCrawlerTest {
 
 	private Mockery mockery;
 	Downloader downloader;
+	PageVisitor visitor;
 
 	@Before
 	public void setUp() {
-		this.mockery = new Mockery();
-		this.downloader = this.mockery.mock(Downloader.class);
+		mockery = new Mockery();
+		downloader = mockery.mock(Downloader.class);
+		visitor = mockery.mock(PageVisitor.class);
 	}
 
 	@After
 	public void tearDown() {
-		this.mockery.assertIsSatisfied();
+		mockery.assertIsSatisfied();
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlIsNull() {
-		new PageCrawler(null, this.downloader);
+		new PageCrawler(null, downloader);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlIsBlank() {
-		new PageCrawler("   \n   \t   ", this.downloader);
+		new PageCrawler("   \n   \t   ", downloader);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlDoesntBeginWithHttp() {
-		new PageCrawler("url", this.downloader);
+		new PageCrawler("url", downloader);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testThatThrowsExceptionIfVisitorIsNull() {
-		new PageCrawler("http://asdasdasdasdasd", this.downloader).craw(null);
+		new PageCrawler("http://asdasdasdasdasd", downloader).craw(null);
 	}
 
 	@Test
 	public void testThatOnlyFollowUrlsAuthorizedByPageVisitor() {
-		final PageVisitor visitor = this.mockery.mock(PageVisitor.class);
 
-		this.mockery.checking(new Expectations() {
+		mockery.checking(new Expectations() {
 			{
-				this.one(PageCrawlerTest.this.downloader).get("http://test.com");
-				this.will(returnValue("<a href=\"http://link\">"));
+				one(downloader).get("http://test.com");
+				will(returnValue("<a href=\"http://link\">"));
 
-				this.one(visitor).visit(this.with(any(Page.class)));
+				one(visitor).visit(with(any(Page.class)));
 
-				this.one(visitor).followUrl(this.with(any(String.class)));
-				this.will(returnValue(false));
+				one(visitor).followUrl(with(any(String.class)));
+				will(returnValue(false));
 			}
 		});
-		new PageCrawler("http://test.com", this.downloader).craw(visitor);
+		new PageCrawler("http://test.com", downloader).craw(visitor);
+	}
+
+	@Test
+	public void testThatCrawlerAvoidCircles() {
+		mockery.checking(new Expectations() {
+			{
+				one(downloader).get(with(any(String.class)));
+				will(returnValue("<a href=\"http://test.com\"><a href=\"http://test.com\">"));
+
+				one(visitor).visit(with(any(Page.class)));
+
+				exactly(2).of(visitor).followUrl("http://test.com");
+				will(returnValue(false));
+			}
+		});
+		new PageCrawler("http://test.com", downloader).craw(visitor);
 	}
 }
