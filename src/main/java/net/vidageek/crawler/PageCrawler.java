@@ -49,7 +49,7 @@ public class PageCrawler {
 			List<String> links = page.getLinks();
 			for (String link : links) {
 				if (visitor.followUrl(link)) {
-					new PageCrawler(link, downloader).craw(visitor);
+					new PageCrawler(link, downloader).craw(visitor, visitedUrls);
 				}
 			}
 
