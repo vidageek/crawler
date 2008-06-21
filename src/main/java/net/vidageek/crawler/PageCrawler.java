@@ -30,10 +30,10 @@ public class PageCrawler {
 			throw new IllegalArgumentException("beginUrl cannot be empty");
 		}
 		if (!beginUrl.startsWith("http://")) {
-			throw new IllegalArgumentException("beginUrl must start with http://");
+			throw new IllegalArgumentException(
+					"beginUrl must start with http://");
 		}
 		this.beginUrl = beginUrl;
-
 	}
 
 	private void craw(final PageVisitor visitor, final Set<String> visitedUrls) {
@@ -45,11 +45,14 @@ public class PageCrawler {
 			visitedUrls.add(beginUrl);
 			Page page = new Page(beginUrl, downloader);
 			visitor.visit(page);
+			LinkNormalizer normalizer = new LinkNormalizer(beginUrl);
 
 			List<String> links = page.getLinks();
-			for (String link : links) {
+			for (String l : links) {
+				String link = normalizer.normalize(l);
 				if (visitor.followUrl(link)) {
-					new PageCrawler(link, downloader).craw(visitor, visitedUrls);
+					new PageCrawler(link, downloader)
+							.craw(visitor, visitedUrls);
 				}
 			}
 
