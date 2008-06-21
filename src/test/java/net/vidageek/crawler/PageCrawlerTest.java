@@ -83,4 +83,18 @@ public class PageCrawlerTest {
 		});
 		new PageCrawler("http://test.com", downloader).craw(visitor);
 	}
+
+	// / Test
+	// public void testThatVisitorReceiveNormalizedLink() {
+	// mokery.checking(new Expectations() {
+	// {
+	// one(downloader).get(with(any(String.class)));
+	// will(returnValue("<a href=\"http://test.com\">"));
+	//
+	// one(visitor).visit(with(any(Page.class)));
+	//
+	// }
+	// });
+	//
+	// }
 }
