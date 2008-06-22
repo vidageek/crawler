@@ -38,8 +38,8 @@ public class WebDownloader implements Downloader {
 		}
 	}
 
-	public int getErrorCode() {
-		return 0;
+	public StatusError getErrorCode() {
+		return StatusError.OK;
 	}
 
 }
