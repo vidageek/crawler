@@ -26,7 +26,8 @@ public class WebDownloader implements Downloader {
 			int methodStatus = client.executeMethod(method);
 
 			if (methodStatus < 200 || methodStatus > 299) {
-				throw new CrawlerException("Could not retrieve data from " + url + ". Error code: " + methodStatus);
+				throw new CrawlerException("Could not retrieve data from "
+						+ url + ". Error code: " + methodStatus);
 			}
 			return method.getResponseBodyAsString();
 
@@ -35,6 +36,10 @@ public class WebDownloader implements Downloader {
 		} catch (IOException e) {
 			throw new CrawlerException("Could not retrieve data from " + url, e);
 		}
+	}
+
+	public int getErrorCode() {
+		return 0;
 	}
 
 }

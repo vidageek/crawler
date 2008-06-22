@@ -11,4 +11,6 @@ public interface Downloader {
 
 	String get(String url);
 
+	int getErrorCode();
+
 }
