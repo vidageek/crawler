@@ -14,31 +14,42 @@ public class LinkNormalizer {
 
 	public LinkNormalizer(final String beginUrl) {
 		if (beginUrl == null || beginUrl.trim().length() == 0) {
-			throw new IllegalArgumentException(
-					"beginUrl cannot be null or empty");
+			throw new IllegalArgumentException("beginUrl cannot be null or empty");
 		}
 
 		if (!beginUrl.startsWith("http://")) {
 			throw new CrawlerException("beginUrl must start with http://");
 		}
-		if (beginUrl.endsWith("/")) {
-			this.beginUrl = beginUrl;
-		} else {
-			this.beginUrl = beginUrl + "/";
-		}
+		this.beginUrl = beginUrl;
 	}
 
 	public String normalize(final String url) {
 		if (url.startsWith("http://")) {
 			return url;
 		}
-		String normalized = beginUrl + url;
-		Pattern pattern = Pattern.compile("(/[^/]+/\\.\\.)");
-		Matcher matcher = pattern.matcher(normalized);
+
+		if (url.startsWith("/")) {
+			Matcher matcher = Pattern.compile("(http://[^/]+)").matcher(beginUrl);
+			if (matcher.find()) {
+				return matcher.group(1) + url;
+			}
+		}
+
+		String normalized = null;
+		if (beginUrl.endsWith("/")) {
+			normalized = beginUrl + url;
+		} else {
+			String substring = beginUrl.substring(beginUrl.lastIndexOf("/") + 1);
+			if (substring.contains(".")) {
+				normalized = beginUrl.subSequence(0, beginUrl.length() - substring.length()) + url;
+			} else {
+				normalized = beginUrl + "/" + url;
+			}
+		}
+		Matcher matcher = Pattern.compile("(/[^/]+/\\.\\.)").matcher(normalized);
 		while (matcher.find()) {
-			normalized = normalized.replaceFirst(Pattern
-					.quote(matcher.group(0)), "");
-			matcher = pattern.matcher(normalized);
+			normalized = normalized.replaceFirst(Pattern.quote(matcher.group(0)), "");
+			matcher = Pattern.compile("(/[^/]+/\\.\\.)").matcher(normalized);
 		}
 
 		return normalized;
