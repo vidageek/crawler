@@ -1,4 +1,4 @@
-package net.vidageek.crawler;
+package net.vidageek.crawler.component;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -8,11 +8,11 @@ import net.vidageek.crawler.exception.CrawlerException;
 /**
  * @author jonasabreu
  */
-public class LinkNormalizer {
+public class DefaultLinkNormalizer implements LinkNormalizer {
 
 	private final String beginUrl;
 
-	public LinkNormalizer(final String beginUrl) {
+	public DefaultLinkNormalizer(final String beginUrl) {
 		if (beginUrl == null || beginUrl.trim().length() == 0) {
 			throw new IllegalArgumentException("beginUrl cannot be null or empty");
 		}

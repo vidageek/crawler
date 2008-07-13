@@ -1,10 +1,11 @@
 /**
  * 
  */
-package net.vidageek.crawler;
+package net.vidageek.crawler.component;
 
 import java.io.IOException;
 
+import net.vidageek.crawler.StatusError;
 import net.vidageek.crawler.exception.CrawlerException;
 
 import org.apache.commons.httpclient.HttpClient;

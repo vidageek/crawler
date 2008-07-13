@@ -1,7 +1,9 @@
 /**
  * 
  */
-package net.vidageek.crawler;
+package net.vidageek.crawler.component;
+
+import net.vidageek.crawler.StatusError;
 
 /**
  * @author jonasabreu

@@ -30,7 +30,6 @@
 	</dependencies>
 
 
-
 	<distributionManagement>
 		<repository>
 			<id>vidageek.net</id>

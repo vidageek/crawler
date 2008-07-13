@@ -3,6 +3,11 @@
  */
 package net.vidageek.crawler;
 
+import net.vidageek.crawler.component.ComponentFactory;
+import net.vidageek.crawler.component.DefaultLinkNormalizer;
+import net.vidageek.crawler.component.Downloader;
+import net.vidageek.crawler.component.LinkNormalizer;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;
@@ -18,12 +23,21 @@ public class PageCrawlerTest {
 	private Mockery mockery;
 	Downloader downloader;
 	PageVisitor visitor;
+	ComponentFactory factory;
 
 	@Before
 	public void setUp() {
 		mockery = new Mockery();
 		downloader = mockery.mock(Downloader.class);
 		visitor = mockery.mock(PageVisitor.class);
+		factory = mockery.mock(ComponentFactory.class);
+
+		mockery.checking(new Expectations() {
+			{
+				allowing(factory).createComponent(Downloader.class);
+				will(returnValue(downloader));
+			}
+		});
 	}
 
 	@After
@@ -33,22 +47,22 @@ public class PageCrawlerTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlIsNull() {
-		new PageCrawler(null, downloader);
+		new PageCrawler(null, factory);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlIsBlank() {
-		new PageCrawler("   \n   \t   ", downloader);
+		new PageCrawler("   \n   \t   ", factory);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlDoesntBeginWithHttp() {
-		new PageCrawler("url", downloader);
+		new PageCrawler("url", factory);
 	}
 
 	@Test(expected = NullPointerException.class)
 	public void testThatThrowsExceptionIfVisitorIsNull() {
-		new PageCrawler("http://asdasdasdasdasd", downloader).craw(null);
+		new PageCrawler("http://asdasdasdasdasd", factory).crawl(null);
 	}
 
 	@Test
@@ -59,13 +73,16 @@ public class PageCrawlerTest {
 				one(downloader).get("http://test.com");
 				will(returnValue("<a href=\"http://link\">"));
 
+				allowing(factory).createComponent(LinkNormalizer.class, "http://test.com");
+				will(returnValue(new DefaultLinkNormalizer("http://test.com")));
+
 				one(visitor).visit(with(any(Page.class)));
 
 				one(visitor).followUrl(with(any(String.class)));
 				will(returnValue(false));
 			}
 		});
-		new PageCrawler("http://test.com", downloader).craw(visitor);
+		new PageCrawler("http://test.com", factory).crawl(visitor);
 	}
 
 	@Test
@@ -75,26 +92,16 @@ public class PageCrawlerTest {
 				one(downloader).get(with(any(String.class)));
 				will(returnValue("<a href=\"http://test.com\"><a href=\"http://test.com\">"));
 
+				allowing(factory).createComponent(LinkNormalizer.class, "http://test.com");
+				will(returnValue(new DefaultLinkNormalizer("http://test.com")));
+
 				one(visitor).visit(with(any(Page.class)));
 
 				exactly(2).of(visitor).followUrl("http://test.com");
 				will(returnValue(false));
 			}
 		});
-		new PageCrawler("http://test.com", downloader).craw(visitor);
+		new PageCrawler("http://test.com", factory).crawl(visitor);
 	}
 
-	// / Test
-	// public void testThatVisitorReceiveNormalizedLink() {
-	// mokery.checking(new Expectations() {
-	// {
-	// one(downloader).get(with(any(String.class)));
-	// will(returnValue("<a href=\"http://test.com\">"));
-	//
-	// one(visitor).visit(with(any(Page.class)));
-	//
-	// }
-	// });
-	//
-	// }
 }

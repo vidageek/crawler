@@ -7,6 +7,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import net.vidageek.crawler.component.ComponentFactory;
+import net.vidageek.crawler.component.DefaultComponentFactory;
+import net.vidageek.crawler.component.Downloader;
+import net.vidageek.crawler.component.LinkNormalizer;
+
 /**
  * @author jonasabreu
  * 
@@ -15,14 +20,15 @@ public class PageCrawler {
 
 	private final String beginUrl;
 
+	private final ComponentFactory factory;
+
 	private final Downloader downloader;
 
 	public PageCrawler(final String beginUrl) {
-		this(beginUrl, new WebDownloader());
+		this(beginUrl, new DefaultComponentFactory());
 	}
 
-	public PageCrawler(final String beginUrl, final Downloader downloader) {
-		this.downloader = downloader;
+	public PageCrawler(final String beginUrl, final ComponentFactory factory) {
 		if (beginUrl == null) {
 			throw new IllegalArgumentException("beginUrl cannot be null");
 		}
@@ -30,13 +36,17 @@ public class PageCrawler {
 			throw new IllegalArgumentException("beginUrl cannot be empty");
 		}
 		if (!beginUrl.startsWith("http://")) {
-			throw new IllegalArgumentException(
-					"beginUrl must start with http://");
+			throw new IllegalArgumentException("beginUrl must start with http://");
 		}
+		if (factory == null) {
+			throw new IllegalArgumentException("factory cannot be null");
+		}
+		this.factory = factory;
 		this.beginUrl = beginUrl;
+		downloader = factory.createComponent(Downloader.class);
 	}
 
-	private void craw(final PageVisitor visitor, final Set<String> visitedUrls) {
+	private void crawl(final PageVisitor visitor, final Set<String> visitedUrls) {
 		if (visitor == null) {
 			throw new NullPointerException("visitor cannot be null");
 		}
@@ -45,14 +55,13 @@ public class PageCrawler {
 			visitedUrls.add(beginUrl);
 			Page page = new Page(beginUrl, downloader);
 			visitor.visit(page);
-			LinkNormalizer normalizer = new LinkNormalizer(beginUrl);
+			LinkNormalizer normalizer = factory.createComponent(LinkNormalizer.class, beginUrl);
 
 			List<String> links = page.getLinks();
 			for (String l : links) {
 				String link = normalizer.normalize(l);
 				if (visitor.followUrl(link)) {
-					new PageCrawler(link, downloader)
-							.craw(visitor, visitedUrls);
+					new PageCrawler(link, factory).crawl(visitor, visitedUrls);
 				}
 			}
 
@@ -60,8 +69,8 @@ public class PageCrawler {
 
 	}
 
-	public void craw(final PageVisitor visitor) {
-		craw(visitor, new HashSet<String>());
+	public void crawl(final PageVisitor visitor) {
+		crawl(visitor, new HashSet<String>());
 
 	}
 }

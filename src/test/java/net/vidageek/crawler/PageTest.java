@@ -5,6 +5,8 @@ package net.vidageek.crawler;
 
 import java.util.List;
 
+import net.vidageek.crawler.component.Downloader;
+
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.junit.After;

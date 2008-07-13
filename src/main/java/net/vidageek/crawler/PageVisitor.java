@@ -13,6 +13,6 @@ public interface PageVisitor {
 
 	boolean followUrl(String url);
 
-	void onError(String url, StatusError statusCode);
+	void onError(String url, StatusError statusError);
 
 }
