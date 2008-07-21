@@ -4,13 +4,14 @@
 package net.vidageek.crawler;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import net.vidageek.crawler.component.ComponentFactory;
 import net.vidageek.crawler.component.DefaultComponentFactory;
 import net.vidageek.crawler.component.Downloader;
 import net.vidageek.crawler.component.LinkNormalizer;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author jonasabreu
@@ -23,6 +24,8 @@ public class PageCrawler {
 	private final ComponentFactory factory;
 
 	private final Downloader downloader;
+
+	private final Logger LOG = Logger.getLogger(PageCrawler.class);
 
 	public PageCrawler(final String beginUrl) {
 		this(beginUrl, new DefaultComponentFactory());
@@ -52,13 +55,17 @@ public class PageCrawler {
 		}
 
 		if (!visitedUrls.contains(beginUrl)) {
+			LOG.info("crawling url: " + beginUrl);
 			visitedUrls.add(beginUrl);
 			Page page = new Page(beginUrl, downloader);
-			visitor.visit(page);
+			if (downloader.getErrorCode() != StatusError.OK) {
+				visitor.onError(beginUrl, downloader.getErrorCode());
+			} else {
+				visitor.visit(page);
+			}
 			LinkNormalizer normalizer = factory.createComponent(LinkNormalizer.class, beginUrl);
 
-			List<String> links = page.getLinks();
-			for (String l : links) {
+			for (String l : page.getLinks()) {
 				String link = normalizer.normalize(l);
 				if (visitor.followUrl(link)) {
 					new PageCrawler(link, factory).crawl(visitor, visitedUrls);
@@ -71,6 +78,5 @@ public class PageCrawler {
 
 	public void crawl(final PageVisitor visitor) {
 		crawl(visitor, new HashSet<String>());
-
 	}
 }

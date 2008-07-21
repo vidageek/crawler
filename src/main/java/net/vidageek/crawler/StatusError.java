@@ -9,5 +9,5 @@ package net.vidageek.crawler;
  */
 public enum StatusError {
 
-	OK
+	OK, NOT_FOUND, UNAUTHORIZED
 }

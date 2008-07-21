@@ -20,16 +20,27 @@ public class WebDownloader implements Downloader {
 
 	private final static HttpClient client = new HttpClient();
 
+	private StatusError error;
+
 	public String get(final String url) {
 		try {
 
 			GetMethod method = new GetMethod(url);
 			int methodStatus = client.executeMethod(method);
+			error = StatusError.OK;
 
-			if (methodStatus < 200 || methodStatus > 299) {
-				throw new CrawlerException("Could not retrieve data from "
-						+ url + ". Error code: " + methodStatus);
+			if (methodStatus >= 400 && methodStatus <= 499) {
+				error = StatusError.NOT_FOUND;
+				return "";
 			}
+			if (methodStatus >= 500 && methodStatus <= 599) {
+				error = StatusError.UNAUTHORIZED;
+				return "";
+			}
+			if (methodStatus < 200 || methodStatus > 299) {
+				throw new CrawlerException("Could not retrieve data from " + url + ". Error code: " + methodStatus);
+			}
+
 			return method.getResponseBodyAsString();
 
 		} catch (HttpException e) {
@@ -40,7 +51,7 @@ public class WebDownloader implements Downloader {
 	}
 
 	public StatusError getErrorCode() {
-		return StatusError.OK;
+		return error;
 	}
 
 }

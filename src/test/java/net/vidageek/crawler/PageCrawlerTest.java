@@ -70,6 +70,9 @@ public class PageCrawlerTest {
 
 		mockery.checking(new Expectations() {
 			{
+				allowing(downloader).getErrorCode();
+				will(returnValue(StatusError.OK));
+
 				one(downloader).get("http://test.com");
 				will(returnValue("<a href=\"http://link\">"));
 
@@ -89,6 +92,9 @@ public class PageCrawlerTest {
 	public void testThatCrawlerAvoidCircles() {
 		mockery.checking(new Expectations() {
 			{
+				allowing(downloader).getErrorCode();
+				will(returnValue(StatusError.OK));
+
 				one(downloader).get(with(any(String.class)));
 				will(returnValue("<a href=\"http://test.com\"><a href=\"http://test.com\">"));
 

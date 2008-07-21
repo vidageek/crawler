@@ -24,8 +24,12 @@ public class DefaultLinkNormalizer implements LinkNormalizer {
 	}
 
 	public String normalize(final String url) {
-		if (url.startsWith("http://")) {
+		if (url.startsWith("http://") || url.startsWith("https://")) {
 			return url;
+		}
+
+		if (url.startsWith("#")) {
+			return beginUrl;
 		}
 
 		if (url.startsWith("/")) {
