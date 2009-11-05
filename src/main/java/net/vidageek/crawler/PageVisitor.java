@@ -7,12 +7,8 @@ package net.vidageek.crawler;
  * @author jonasabreu
  * 
  */
-public interface PageVisitor {
+public interface PageVisitor extends ContentVisitor {
 
-	void visit(Page page);
-
-	boolean followUrl(String url);
-
-	void onError(String url, StatusError statusError);
+    boolean followUrl(String url);
 
 }

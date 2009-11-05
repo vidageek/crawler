@@ -6,6 +6,7 @@ package net.vidageek.crawler.visitor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import net.vidageek.crawler.ContentVisitor;
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.PageVisitor;
 import net.vidageek.crawler.StatusError;
@@ -19,8 +20,10 @@ import net.vidageek.crawler.StatusError;
 public class DomainVisitor implements PageVisitor {
 
     private final String domain;
+    private final ContentVisitor visitor;
 
-    public DomainVisitor(final String baseUrl) {
+    public DomainVisitor(final String baseUrl, final ContentVisitor visitor) {
+        this.visitor = visitor;
         if ((baseUrl == null) || (baseUrl.trim().length() == 0)) {
             throw new IllegalArgumentException("baseUrl cannot be null or empty");
         }
@@ -38,12 +41,14 @@ public class DomainVisitor implements PageVisitor {
         return url.startsWith(domain);
     }
 
+    // Delegate methods
+
     public void onError(final String url, final StatusError statusError) {
-        // do nothing
+        visitor.onError(url, statusError);
     }
 
     public void visit(final Page page) {
-        // do nothing
+        visitor.visit(page);
     }
 
 }
