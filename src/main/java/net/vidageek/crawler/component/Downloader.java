@@ -3,7 +3,7 @@
  */
 package net.vidageek.crawler.component;
 
-import net.vidageek.crawler.Status;
+import net.vidageek.crawler.Page;
 
 /**
  * @author jonasabreu
@@ -11,8 +11,6 @@ import net.vidageek.crawler.Status;
  */
 public interface Downloader {
 
-	String get(String url);
-
-	Status getErrorCode();
+    Page get(String url);
 
 }

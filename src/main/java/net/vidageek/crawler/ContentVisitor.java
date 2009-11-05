@@ -1,5 +1,6 @@
 package net.vidageek.crawler;
 
+
 /**
  * @author jonasabreu
  * 

@@ -6,6 +6,7 @@ package net.vidageek.crawler;
 import net.vidageek.crawler.component.DefaultLinkNormalizer;
 import net.vidageek.crawler.component.Downloader;
 import net.vidageek.crawler.component.LinkNormalizer;
+import net.vidageek.crawler.page.OkPage;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -62,13 +63,10 @@ public class PageCrawlerTest {
 
         mockery.checking(new Expectations() {
             {
-                allowing(downloader).getErrorCode();
-                will(returnValue(Status.OK));
-
                 one(downloader).get("http://test.com");
-                will(returnValue("<a href=\"http://link\">"));
+                will(returnValue(new OkPage("http://test.com", "<a href=\"http://link\">")));
 
-                one(visitor).visit(with(any(Page.class)));
+                one(visitor).visit(with(any(OkPage.class)));
 
                 one(visitor).followUrl(with(any(String.class)));
                 will(returnValue(false));
@@ -81,13 +79,11 @@ public class PageCrawlerTest {
     public void testThatCrawlerAvoidCircles() {
         mockery.checking(new Expectations() {
             {
-                allowing(downloader).getErrorCode();
-                will(returnValue(Status.OK));
-
                 one(downloader).get(with(any(String.class)));
-                will(returnValue("<a href=\"http://test.com\"><a href=\"http://test.com\">"));
+                will(returnValue(new OkPage("http://test.com",
+                        "<a href=\"http://test.com\"><a href=\"http://test.com\">")));
 
-                one(visitor).visit(with(any(Page.class)));
+                one(visitor).visit(with(any(OkPage.class)));
 
                 exactly(2).of(visitor).followUrl("http://test.com");
                 will(returnValue(false));

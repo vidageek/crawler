@@ -54,9 +54,9 @@ public class PageCrawler {
         if (!visitedUrls.contains(beginUrl)) {
             LOG.info("crawling url: " + beginUrl);
             visitedUrls.add(beginUrl);
-            Page page = new Page(beginUrl, downloader);
-            if (downloader.getErrorCode() != Status.OK) {
-                visitor.onError(beginUrl, downloader.getErrorCode());
+            Page page = downloader.get(beginUrl);
+            if (page.getStatusCode() != Status.OK) {
+                visitor.onError(beginUrl, page.getStatusCode());
             } else {
                 visitor.visit(page);
             }
