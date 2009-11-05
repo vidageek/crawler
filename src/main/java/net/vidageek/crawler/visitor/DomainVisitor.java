@@ -18,35 +18,32 @@ import net.vidageek.crawler.StatusError;
  */
 public class DomainVisitor implements PageVisitor {
 
-	private final String domain;
+    private final String domain;
 
-	public DomainVisitor(final String baseUrl) {
-		if (baseUrl == null || baseUrl.trim().length() == 0) {
-			throw new IllegalArgumentException("baseUrl cannot be null or empty");
-		}
-		Matcher matcher = Pattern.compile("(http://[^/]+)").matcher(baseUrl);
-		if (!matcher.find()) {
-			throw new IllegalArgumentException("baseUrl must match http://[^/]+");
-		}
-		domain = matcher.group(1) + "/";
-	}
+    public DomainVisitor(final String baseUrl) {
+        if ((baseUrl == null) || (baseUrl.trim().length() == 0)) {
+            throw new IllegalArgumentException("baseUrl cannot be null or empty");
+        }
+        Matcher matcher = Pattern.compile("(http://[^/]+)").matcher(baseUrl);
+        if (!matcher.find()) {
+            throw new IllegalArgumentException("baseUrl must match http://[^/]+");
+        }
+        domain = matcher.group(1) + "/";
+    }
 
-	@Override
-	public boolean followUrl(final String url) {
-		if (url == null) {
-			return false;
-		}
-		return url.startsWith(domain);
-	}
+    public boolean followUrl(final String url) {
+        if (url == null) {
+            return false;
+        }
+        return url.startsWith(domain);
+    }
 
-	@Override
-	public void onError(final String url, final StatusError statusError) {
-		// do nothing
-	}
+    public void onError(final String url, final StatusError statusError) {
+        // do nothing
+    }
 
-	@Override
-	public void visit(final Page page) {
-		// do nothing
-	}
+    public void visit(final Page page) {
+        // do nothing
+    }
 
 }
