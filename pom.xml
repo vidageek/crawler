@@ -8,7 +8,6 @@
 	<packaging>jar</packaging>
 	<description>Simple and extensible crawler.</description>
 	<inceptionYear>2008</inceptionYear>
-	<url>http://projects.vidageek.net/crawler</url>
 	<organization>
 		<name>VidaGeek.net</name>
 		<url>http://vidageek.net</url>
@@ -20,13 +19,6 @@
 			<url>http://apache.org/licenses/LICENSE-2.0.txt</url>
 		</license>
 	</licenses>
-	<scm>
-		<connection>http://svn.vidageek.net/crawler</connection>
-		<url>scm:svn:http://svn.vidageek.net/crawler</url>
-	</scm>
-	<issueManagement>
-		<url>http://bugs.vidageek.net</url>
-	</issueManagement>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -51,19 +43,6 @@
 			<version>1.2.14</version>
 		</dependency>
 	</dependencies>
-	<distributionManagement>
-		<repository>
-			<id>vidageek.net</id>
-			<name>VidaGeek.net Maven Repository</name>
-			<url>scp://vidageek@vidageek.net/home/vidageek/maven.vidageek.net/</url>
-		</repository>
-		<snapshotRepository>
-			<id>vidageek.net</id>
-			<name>VidaGeek.net Maven Snapshot Repository</name>
-			<url>scp://vidageek@vidageek.net/home/vidageek/snapshots.vidageek.net/</url>
-			<uniqueVersion>false</uniqueVersion>
-		</snapshotRepository>
-	</distributionManagement>
 	<reporting>
 		<plugins>
 			<plugin>
@@ -78,8 +57,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.5</source>
+					<target>1.5</target>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -95,12 +74,6 @@
 				</executions>
 			</plugin>
 		</plugins>
-		<extensions>
-<!--			<extension>-->
-<!--				<groupId>org.apache.maven.wagon</groupId>-->
-<!--				<artifactId>wagon-ssh-external</artifactId>-->
-<!--			</extension>-->
-		</extensions>
 	</build>
 	<developers>
 		<developer>
