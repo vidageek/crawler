@@ -5,7 +5,7 @@ package net.vidageek.crawler.component;
 
 import java.io.IOException;
 
-import net.vidageek.crawler.StatusError;
+import net.vidageek.crawler.Status;
 import net.vidageek.crawler.exception.CrawlerException;
 
 import org.apache.commons.httpclient.HttpClient;
@@ -20,21 +20,21 @@ public class WebDownloader implements Downloader {
 
 	private final static HttpClient client = new HttpClient();
 
-	private StatusError error;
+	private Status error;
 
 	public String get(final String url) {
 		try {
 
 			GetMethod method = new GetMethod(url);
 			int methodStatus = client.executeMethod(method);
-			error = StatusError.OK;
+			error = Status.OK;
 
 			if (methodStatus >= 400 && methodStatus <= 499) {
-				error = StatusError.NOT_FOUND;
+				error = Status.NOT_FOUND;
 				return "";
 			}
 			if (methodStatus >= 500 && methodStatus <= 599) {
-				error = StatusError.UNAUTHORIZED;
+				error = Status.UNAUTHORIZED;
 				return "";
 			}
 			if (methodStatus < 200 || methodStatus > 299) {
@@ -50,7 +50,7 @@ public class WebDownloader implements Downloader {
 		}
 	}
 
-	public StatusError getErrorCode() {
+	public Status getErrorCode() {
 		return error;
 	}
 

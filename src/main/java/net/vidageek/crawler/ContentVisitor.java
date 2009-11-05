@@ -8,6 +8,6 @@ public interface ContentVisitor {
 
     void visit(Page page);
 
-    void onError(String url, StatusError statusError);
+    void onError(String url, Status statusError);
 
 }

@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import net.vidageek.crawler.ContentVisitor;
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.PageVisitor;
-import net.vidageek.crawler.StatusError;
+import net.vidageek.crawler.Status;
 
 /**
  * Simple visitor to crawl a single domain.
@@ -43,7 +43,7 @@ public class DomainVisitor implements PageVisitor {
 
     // Delegate methods
 
-    public void onError(final String url, final StatusError statusError) {
+    public void onError(final String url, final Status statusError) {
         visitor.onError(url, statusError);
     }
 
