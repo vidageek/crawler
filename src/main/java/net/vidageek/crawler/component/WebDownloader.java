@@ -4,6 +4,8 @@
 package net.vidageek.crawler.component;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
@@ -26,7 +28,11 @@ public class WebDownloader implements Downloader {
     public Page get(final String url) {
         try {
 
-            GetMethod method = new GetMethod(url);
+            String encodedUrl = encode(url);
+
+            System.out.println(encodedUrl);
+
+            GetMethod method = new GetMethod(encodedUrl);
             Status status = Status.fromHttpCode(client.executeMethod(method));
 
             if (Status.OK.equals(status)) {
@@ -41,4 +47,21 @@ public class WebDownloader implements Downloader {
         }
     }
 
+    private String encode(final String url) {
+        String res = "";
+        for (char c : url.toCharArray()) {
+            if (!":/.?#=".contains("" + c)) {
+                try {
+                    res += URLEncoder.encode("" + c, "UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    throw new CrawlerException(
+                            "There is something really wrong with your JVM. It could not find UTF-8 encoding.", e);
+                }
+            } else {
+                res += c;
+            }
+        }
+
+        return res;
+    }
 }
