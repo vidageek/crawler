@@ -27,19 +27,12 @@ public class WebDownloader implements Downloader {
         try {
 
             GetMethod method = new GetMethod(url);
-            int methodStatus = client.executeMethod(method);
+            Status status = Status.fromHttpCode(client.executeMethod(method));
 
-            if ((methodStatus >= 400) && (methodStatus <= 499)) {
-                return new ErrorPage(url, Status.NOT_FOUND);
+            if (Status.OK.equals(status)) {
+                return new OkPage(url, method.getResponseBodyAsString());
             }
-            if ((methodStatus >= 500) && (methodStatus <= 599)) {
-                return new ErrorPage(url, Status.UNAUTHORIZED);
-            }
-            if ((methodStatus < 200) || (methodStatus > 299)) {
-                throw new CrawlerException("Could not retrieve data from " + url + ". Error code: " + methodStatus);
-            }
-
-            return new OkPage(url, method.getResponseBodyAsString());
+            return new ErrorPage(url, status);
 
         } catch (HttpException e) {
             throw new CrawlerException("Could not retrieve data from " + url, e);
