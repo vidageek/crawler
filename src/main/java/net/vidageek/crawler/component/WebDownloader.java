@@ -30,8 +30,6 @@ public class WebDownloader implements Downloader {
 
             String encodedUrl = encode(url);
 
-            System.out.println(encodedUrl);
-
             GetMethod method = new GetMethod(encodedUrl);
             Status status = Status.fromHttpCode(client.executeMethod(method));
 
