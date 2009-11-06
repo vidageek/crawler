@@ -16,4 +16,6 @@ public interface Page {
 
     public Status getStatusCode();
 
+    public String getCharset();
+
 }

@@ -36,7 +36,7 @@ public class WebDownloader implements Downloader {
             Status status = Status.fromHttpCode(client.executeMethod(method));
 
             if (Status.OK.equals(status)) {
-                return new OkPage(url, method.getResponseBodyAsString());
+                return new OkPage(url, method.getResponseBodyAsString(), method.getResponseCharSet());
             }
             return new ErrorPage(url, status);
 

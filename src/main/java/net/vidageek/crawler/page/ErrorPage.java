@@ -36,4 +36,8 @@ final public class ErrorPage implements Page {
         return error;
     }
 
+    public String getCharset() {
+        return "";
+    }
+
 }

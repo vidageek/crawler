@@ -19,13 +19,15 @@ public class OkPage implements Page {
 
     private final String url;
     private final String content;
+    private final String charset;
 
-    public OkPage(final String url, final String content) {
+    public OkPage(final String url, final String content, final String charset) {
         if ((url == null) || (url.trim().length() == 0)) {
             throw new IllegalArgumentException("url cannot be null");
         }
         this.url = url;
         this.content = content;
+        this.charset = charset;
     }
 
     public List<String> getLinks() {
@@ -51,5 +53,9 @@ public class OkPage implements Page {
 
     public Status getStatusCode() {
         return Status.OK;
+    }
+
+    public String getCharset() {
+        return charset;
     }
 }

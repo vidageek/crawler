@@ -23,18 +23,18 @@ public class OkPageTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testThatThrowsExceptionIfUrlIsNull() {
-        new OkPage(null, "content");
+        new OkPage(null, "content", "UTF-8");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testThatThrowsExceptionIfUrlIsEmpty() {
-        new OkPage("  \n   \t   ", "content");
+        new OkPage("  \n   \t   ", "content", "UTF-8");
     }
 
     @Test
     public void testThatCanRecoverTwoLinks() {
 
-        List<String> links = new OkPage("defaultUrl", "<a href=\"test link\">\n\n <a \nhref=\"test link2\">")
+        List<String> links = new OkPage("defaultUrl", "<a href=\"test link\">\n\n <a \nhref=\"test link2\">", "UTF-8")
             .getLinks();
 
         assertEquals(2, links.size());

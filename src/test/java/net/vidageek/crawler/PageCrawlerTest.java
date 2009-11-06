@@ -64,7 +64,7 @@ public class PageCrawlerTest {
         mockery.checking(new Expectations() {
             {
                 one(downloader).get("http://test.com");
-                will(returnValue(new OkPage("http://test.com", "<a href=\"http://link\">")));
+                will(returnValue(new OkPage("http://test.com", "<a href=\"http://link\">", "UTF-8")));
 
                 one(visitor).visit(with(any(OkPage.class)));
 
@@ -81,7 +81,7 @@ public class PageCrawlerTest {
             {
                 one(downloader).get(with(any(String.class)));
                 will(returnValue(new OkPage("http://test.com",
-                        "<a href=\"http://test.com\"><a href=\"http://test.com\">")));
+                        "<a href=\"http://test.com\"><a href=\"http://test.com\">", "UTF-8")));
 
                 one(visitor).visit(with(any(OkPage.class)));
 
