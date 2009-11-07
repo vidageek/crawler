@@ -4,8 +4,11 @@
 package net.vidageek.crawler.component;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Scanner;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
@@ -34,7 +37,8 @@ public class WebDownloader implements Downloader {
             Status status = Status.fromHttpCode(client.executeMethod(method));
 
             if (Status.OK.equals(status)) {
-                return new OkPage(url, method.getResponseBodyAsString(), method.getResponseCharSet());
+                return new OkPage(url, read(method.getResponseBodyAsStream(), method.getResponseCharSet()), method
+                    .getResponseCharSet());
             }
             return new ErrorPage(url, status);
 
@@ -42,6 +46,16 @@ public class WebDownloader implements Downloader {
             throw new CrawlerException("Could not retrieve data from " + url, e);
         } catch (IOException e) {
             throw new CrawlerException("Could not retrieve data from " + url, e);
+        }
+    }
+
+    private String read(final InputStream inputStream, final String charset) {
+        try {
+            String encodedString = new Scanner(new InputStreamReader(inputStream, charset)).useDelimiter("$$").next();
+
+            return new String(encodedString.getBytes("UTF-8"), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new CrawlerException("Encode not supported: " + charset, e);
         }
     }
 
