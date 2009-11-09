@@ -5,22 +5,22 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class IframeLinkTest {
+public class DefaultLinkFinderTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testIllegalArgumentException() {
-		new IframeLink(null);
+		new DefaultLinkFinder(null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testEmptyIllegalArgumentException() {
-		new IframeLink("");
+		new DefaultLinkFinder("");
 	}
 
 	@Test
 	public void testCanRecoverLinks() {
-		List<String> links = new IframeLink(
-				"<br /> <iframe id=\"link1\" href=\"test.page1\"></iframe><br />  <iframe id=\"link2\" href=\"test.page2\"></iframe>")
+		List<String> links = new DefaultLinkFinder(
+				"<br /> <a id=\"link1\" href=\"test.page1\"></a><br />  <a id=\"link2\" href=\"test.page2\"></a>")
 				.getLinks();
 		Assert.assertEquals(2, links.size());
 		Assert.assertEquals("test.page1", links.get(0));

@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import net.vidageek.crawler.LinksCrawler;
+import net.vidageek.crawler.LinksFinder;
 
-public class DefaultLink implements LinksCrawler {
+public class DefaultLinkFinder implements LinksFinder {
 
 	private final String content;
 
-	public DefaultLink(final String content) {
+	public DefaultLinkFinder(final String content) {
 		if (content == null || "".equals(content.trim())) {
 			throw new IllegalArgumentException("content cannot be null");
 		}

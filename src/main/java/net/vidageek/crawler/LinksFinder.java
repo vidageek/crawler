@@ -2,7 +2,7 @@ package net.vidageek.crawler;
 
 import java.util.List;
 
-public interface LinksCrawler {
+public interface LinksFinder {
 
 	public List<String> getLinks();
 }

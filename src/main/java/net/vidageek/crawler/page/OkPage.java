@@ -8,8 +8,8 @@ import java.util.List;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
-import net.vidageek.crawler.link.IframeLink;
-import net.vidageek.crawler.link.DefaultLink;
+import net.vidageek.crawler.link.IframeLinkFinder;
+import net.vidageek.crawler.link.DefaultLinkFinder;
 
 /**
  * @author jonasabreu
@@ -33,8 +33,8 @@ public class OkPage implements Page {
 	public List<String> getLinks() {
 
 		List<String> list = new ArrayList<String>();
-		list.addAll(new DefaultLink(content).getLinks());
-		list.addAll(new IframeLink(content).getLinks());
+		list.addAll(new DefaultLinkFinder(content).getLinks());
+		list.addAll(new IframeLinkFinder(content).getLinks());
 
 		return list;
 	}
