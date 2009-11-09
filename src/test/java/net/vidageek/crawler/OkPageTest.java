@@ -21,24 +21,32 @@ import org.junit.runner.RunWith;
 @RunWith(Theories.class)
 public class OkPageTest {
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testThatThrowsExceptionIfUrlIsNull() {
-        new OkPage(null, "content", "UTF-8");
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testThatThrowsExceptionIfUrlIsNull() {
+		new OkPage(null, "content", "UTF-8");
+	}
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testThatThrowsExceptionIfUrlIsEmpty() {
-        new OkPage("  \n   \t   ", "content", "UTF-8");
-    }
+	@Test(expected = IllegalArgumentException.class)
+	public void testThatThrowsExceptionIfUrlIsEmpty() {
+		new OkPage("  \n   \t   ", "content", "UTF-8");
+	}
 
-    @Test
-    public void testThatCanRecoverTwoLinks() {
+	@Test
+	public void testThatCanRecoverTwoLinks() {
 
-        List<String> links = new OkPage("defaultUrl", "<a href=\"test link\">\n\n <a \nhref=\"test link2\">", "UTF-8")
-            .getLinks();
+		List<String> links = new OkPage("defaultUrl", "<a href=\"test link\">\n\n <a \nhref=\"test link2\">", "UTF-8")
+				.getLinks();
 
-        assertEquals(2, links.size());
-        assertEquals("test link", links.get(0));
-        assertEquals("test link2", links.get(1));
-    }
+		assertEquals(2, links.size());
+		assertEquals("test link", links.get(0));
+		assertEquals("test link2", links.get(1));
+	}
+
+	@Test
+	public void testThatCanRecoverIframeLink() {
+		List<String> links = new OkPage("defaultUrl", "<iframe href=\"test.page\">", "UTF-8").getLinks();
+
+		assertEquals(1, links.size());
+		assertEquals("test.page", links.get(0));
+	}
 }

@@ -5,11 +5,11 @@ package net.vidageek.crawler.page;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
+import net.vidageek.crawler.link.IframeLink;
+import net.vidageek.crawler.link.DefaultLink;
 
 /**
  * @author jonasabreu
@@ -17,45 +17,41 @@ import net.vidageek.crawler.Status;
  */
 public class OkPage implements Page {
 
-    private final String url;
-    private final String content;
-    private final String charset;
+	private final String url;
+	private final String content;
+	private final String charset;
 
-    public OkPage(final String url, final String content, final String charset) {
-        if ((url == null) || (url.trim().length() == 0)) {
-            throw new IllegalArgumentException("url cannot be null");
-        }
-        this.url = url;
-        this.content = content;
-        this.charset = charset;
-    }
+	public OkPage(final String url, final String content, final String charset) {
+		if (url == null || url.trim().length() == 0) {
+			throw new IllegalArgumentException("url cannot be null");
+		}
+		this.url = url;
+		this.content = content;
+		this.charset = charset;
+	}
 
-    public List<String> getLinks() {
-        Pattern pattern = Pattern.compile("(?i)(?s)<\\s*?a.*?href=\"(.*?)\".*?>");
+	public List<String> getLinks() {
 
-        Matcher matcher = pattern.matcher(content);
+		List<String> list = new ArrayList<String>();
+		list.addAll(new DefaultLink(content).getLinks());
+		list.addAll(new IframeLink(content).getLinks());
 
-        List<String> list = new ArrayList<String>();
-        while (matcher.find()) {
-            list.add(matcher.group(1));
-        }
-        return list;
+		return list;
+	}
 
-    }
+	public String getUrl() {
+		return url;
+	}
 
-    public String getUrl() {
-        return url;
-    }
+	public String getContent() {
+		return content;
+	}
 
-    public String getContent() {
-        return content;
-    }
+	public Status getStatusCode() {
+		return Status.OK;
+	}
 
-    public Status getStatusCode() {
-        return Status.OK;
-    }
-
-    public String getCharset() {
-        return charset;
-    }
+	public String getCharset() {
+		return charset;
+	}
 }
