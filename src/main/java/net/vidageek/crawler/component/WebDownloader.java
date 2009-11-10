@@ -11,6 +11,7 @@ import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
@@ -30,11 +31,10 @@ import org.apache.commons.httpclient.methods.GetMethod;
  */
 public class WebDownloader implements Downloader {
 
-    private final static HttpClient client = new HttpClient();
-    private final List<String> mimeTypesToInclude;
+    private final ConcurrentLinkedQueue<String> mimeTypesToInclude;
 
     public WebDownloader(final List<String> mimeTypesToInclude) {
-        this.mimeTypesToInclude = mimeTypesToInclude;
+        this.mimeTypesToInclude = new ConcurrentLinkedQueue<String>(mimeTypesToInclude);
     }
 
     public WebDownloader() {
@@ -45,6 +45,7 @@ public class WebDownloader implements Downloader {
         try {
 
             String encodedUrl = encode(url);
+            final HttpClient client = new HttpClient();
 
             GetMethod method = new GetMethod(encodedUrl);
             Status status = Status.fromHttpCode(client.executeMethod(method));
