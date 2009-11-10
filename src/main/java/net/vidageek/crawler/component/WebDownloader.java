@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
 import net.vidageek.crawler.Page;
@@ -15,7 +17,9 @@ import net.vidageek.crawler.Status;
 import net.vidageek.crawler.exception.CrawlerException;
 import net.vidageek.crawler.page.ErrorPage;
 import net.vidageek.crawler.page.OkPage;
+import net.vidageek.crawler.page.RejectedMimeTypePage;
 
+import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -27,6 +31,15 @@ import org.apache.commons.httpclient.methods.GetMethod;
 public class WebDownloader implements Downloader {
 
     private final static HttpClient client = new HttpClient();
+    private final List<String> mimeTypesToInclude;
+
+    public WebDownloader(final List<String> mimeTypesToInclude) {
+        this.mimeTypesToInclude = mimeTypesToInclude;
+    }
+
+    public WebDownloader() {
+        this(Arrays.asList("text/html"));
+    }
 
     public Page get(final String url) {
         try {
@@ -35,6 +48,10 @@ public class WebDownloader implements Downloader {
 
             GetMethod method = new GetMethod(encodedUrl);
             Status status = Status.fromHttpCode(client.executeMethod(method));
+
+            if (!acceptsMimeType(method.getResponseHeader("Content-Type"))) {
+                return new RejectedMimeTypePage(url, status, method.getResponseHeader("Content-Type").getValue());
+            }
 
             if (Status.OK.equals(status)) {
                 return new OkPage(url, read(method.getResponseBodyAsStream(), method.getResponseCharSet()), method
@@ -47,6 +64,20 @@ public class WebDownloader implements Downloader {
         } catch (IOException e) {
             throw new CrawlerException("Could not retrieve data from " + url, e);
         }
+    }
+
+    private boolean acceptsMimeType(final Header responseMimeType) {
+        final String value = responseMimeType.getValue();
+        if (value == null) {
+            return false;
+        }
+
+        for (String mimeType : mimeTypesToInclude) {
+            if (value.contains(mimeType)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String read(final InputStream inputStream, final String charset) {
