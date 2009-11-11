@@ -3,15 +3,18 @@
  */
 package net.vidageek.crawler;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 import net.vidageek.crawler.component.DefaultLinkNormalizer;
 import net.vidageek.crawler.component.Downloader;
+import net.vidageek.crawler.component.ExecutorCounter;
 import net.vidageek.crawler.component.LinkNormalizer;
+import net.vidageek.crawler.component.PageCrawlerExecutor;
 import net.vidageek.crawler.component.WebDownloader;
-
-import org.apache.log4j.Logger;
+import net.vidageek.crawler.exception.CrawlerException;
+import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
 
 /**
  * @author jonasabreu
@@ -22,8 +25,6 @@ public class PageCrawler {
     private final String beginUrl;
 
     private final Downloader downloader;
-
-    private final Logger LOG = Logger.getLogger(PageCrawler.class);
 
     private final LinkNormalizer normalizer;
 
@@ -46,33 +47,26 @@ public class PageCrawler {
         this.normalizer = normalizer;
     }
 
-    private void crawl(final PageVisitor visitor, final Set<String> visitedUrls) {
+    public void crawl(final PageVisitor visitor) {
         if (visitor == null) {
             throw new NullPointerException("visitor cannot be null");
         }
 
-        if (!visitedUrls.contains(beginUrl)) {
-            LOG.info("crawling url: " + beginUrl);
-            visitedUrls.add(beginUrl);
-            Page page = downloader.get(beginUrl);
-            if (page.getStatusCode() != Status.OK) {
-                visitor.onError(beginUrl, page.getStatusCode());
-            } else {
-                visitor.visit(page);
-            }
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
+                new LinkedBlockingQueue<Runnable>());
 
-            for (String l : page.getLinks()) {
-                String link = normalizer.normalize(l);
-                if (visitor.followUrl(link)) {
-                    new PageCrawler(link, downloader, normalizer).crawl(visitor, visitedUrls);
-                }
-            }
+        final ExecutorCounter counter = new ExecutorCounter();
 
+        executor.execute(new PageCrawlerExecutor(executor, counter, beginUrl, downloader, normalizer,
+                new DoesNotFollowVisitedUrlVisitor(visitor)));
+
+        while (counter.value() != 0) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                throw new CrawlerException("There was a problem with some thread.", e);
+            }
         }
 
-    }
-
-    public void crawl(final PageVisitor visitor) {
-        crawl(visitor, new HashSet<String>());
     }
 }

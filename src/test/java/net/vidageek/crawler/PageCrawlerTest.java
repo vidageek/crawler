@@ -85,8 +85,6 @@ public class PageCrawlerTest {
 
                 one(visitor).visit(with(any(OkPage.class)));
 
-                exactly(2).of(visitor).followUrl("http://test.com");
-                will(returnValue(false));
             }
         });
         new PageCrawler("http://test.com", downloader, new DefaultLinkNormalizer("http://test.com")).crawl(visitor);
