@@ -26,17 +26,16 @@ final public class DoesNotFollowVisitedUrlVisitor implements PageVisitor {
         if (visitedUrls.get(url) != null) {
             return false;
         }
+        visitedUrls.put(url, "");
         return visitor.followUrl(url);
     }
 
     public void onError(final String url, final Status statusError) {
-        visitedUrls.put(url, "");
         visitor.onError(url, statusError);
 
     }
 
     public void visit(final Page page) {
-        visitedUrls.put(page.getUrl(), "");
         visitor.visit(page);
     }
 
