@@ -14,7 +14,11 @@ import net.vidageek.crawler.component.ExecutorCounter;
 import net.vidageek.crawler.component.LinkNormalizer;
 import net.vidageek.crawler.component.PageCrawlerExecutor;
 import net.vidageek.crawler.component.WebDownloader;
+import net.vidageek.crawler.exception.CrawlerException;
+import net.vidageek.crawler.visitor.DoesNotFollowLongUrls;
 import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author jonasabreu
@@ -27,6 +31,8 @@ public class PageCrawler {
     private final Downloader downloader;
 
     private final LinkNormalizer normalizer;
+
+    private final Logger log = Logger.getLogger(PageCrawler.class);
 
     public PageCrawler(final String beginUrl) {
         this(beginUrl, new WebDownloader(), new DefaultLinkNormalizer(beginUrl));
@@ -55,7 +61,7 @@ public class PageCrawler {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(1200));
 
-        monitorCrawling(executor, new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor));
+        monitorCrawling(executor, new DoesNotFollowLongUrls(new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
 
     }
 
@@ -66,20 +72,31 @@ public class PageCrawler {
         urls.add(beginUrl);
 
         while (true) {
+            log.debug("url pool size: " + urls.size());
+            log.debug("Number of Executors running: " + counter.value());
             if ((urls.size() != 0) && (counter.value() < 1000)) {
                 for (int i = 0; i < 100; i++) {
                     executor.execute(new PageCrawlerExecutor(counter, urls, downloader, normalizer, visitor));
                 }
             } else {
-                while (counter.value() != 0) {
-                    Thread.yield();
+                while ((counter.value() != 0) && (urls.size() == 0)) {
+                    log.debug("Number of Executors running: " + counter.value());
+                    sleep();
                 }
                 if (urls.size() == 0) {
                     break;
                 }
             }
-            Thread.yield();
-
+            sleep();
         }
+    }
+
+    private void sleep() {
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            throw new CrawlerException("main thread died. ", e);
+        }
+
     }
 }

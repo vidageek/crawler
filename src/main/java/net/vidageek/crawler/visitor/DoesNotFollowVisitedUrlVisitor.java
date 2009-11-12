@@ -28,6 +28,10 @@ final public class DoesNotFollowVisitedUrlVisitor implements PageVisitor {
             return false;
         }
         visitedUrls.put(url, "");
+        if (url.contains("noticia") || url.contains("forward") || url.contains("evento") || url.contains("tag")
+                || url.contains("na-midia") || url.contains("boteco")) {
+            return false;
+        }
         return visitor.followUrl(url);
     }
 

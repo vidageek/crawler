@@ -3,7 +3,6 @@ package net.vidageek.crawler.component;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.vidageek.crawler.Page;
-import net.vidageek.crawler.PageCrawler;
 import net.vidageek.crawler.PageVisitor;
 import net.vidageek.crawler.Status;
 
@@ -21,7 +20,7 @@ final public class PageCrawlerExecutor implements Runnable {
     private final PageVisitor visitor;
     private final ExecutorCounter counter;
 
-    private final Logger log = Logger.getLogger(PageCrawler.class);
+    private final Logger log = Logger.getLogger(PageCrawlerExecutor.class);
 
     public PageCrawlerExecutor(final ExecutorCounter counter, final ConcurrentLinkedQueue<String> urlsToCrawl,
             final Downloader downloader, final LinkNormalizer normalizer, final PageVisitor visitor) {
@@ -36,25 +35,28 @@ final public class PageCrawlerExecutor implements Runnable {
 
     public void run() {
 
-        String urlToCrawl = urlsToCrawl.poll();
-        if (urlToCrawl != null) {
-            log.info("crawling url: " + urlToCrawl);
+        try {
+            String urlToCrawl = urlsToCrawl.poll();
+            if (urlToCrawl != null) {
+                log.info("crawling url: " + urlToCrawl);
 
-            Page page = downloader.get(urlToCrawl);
-            if (page.getStatusCode() != Status.OK) {
-                visitor.onError(urlToCrawl, page.getStatusCode());
-            } else {
-                visitor.visit(page);
-            }
+                Page page = downloader.get(urlToCrawl);
+                if (page.getStatusCode() != Status.OK) {
+                    visitor.onError(urlToCrawl, page.getStatusCode());
+                } else {
+                    visitor.visit(page);
+                }
 
-            for (String l : page.getLinks()) {
-                String link = normalizer.normalize(l);
-                if (visitor.followUrl(link)) {
-                    urlsToCrawl.add(link);
+                for (String l : page.getLinks()) {
+                    String link = normalizer.normalize(l);
+                    if (visitor.followUrl(link)) {
+                        urlsToCrawl.add(link);
+                    }
                 }
             }
+        } finally {
+            counter.decrease();
         }
-        counter.decrease();
     }
 
 }
