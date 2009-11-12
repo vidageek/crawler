@@ -3,6 +3,7 @@
  */
 package net.vidageek.crawler;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -13,7 +14,6 @@ import net.vidageek.crawler.component.ExecutorCounter;
 import net.vidageek.crawler.component.LinkNormalizer;
 import net.vidageek.crawler.component.PageCrawlerExecutor;
 import net.vidageek.crawler.component.WebDownloader;
-import net.vidageek.crawler.exception.CrawlerException;
 import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
 
 /**
@@ -53,20 +53,33 @@ public class PageCrawler {
         }
 
         ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>());
+                new LinkedBlockingQueue<Runnable>(1200));
 
+        monitorCrawling(executor, new DoesNotFollowVisitedUrlVisitor(visitor));
+
+    }
+
+    private void monitorCrawling(final ThreadPoolExecutor executor, final PageVisitor visitor) {
         final ExecutorCounter counter = new ExecutorCounter();
+        ConcurrentLinkedQueue<String> urls = new ConcurrentLinkedQueue<String>();
 
-        executor.execute(new PageCrawlerExecutor(executor, counter, beginUrl, downloader, normalizer,
-                new DoesNotFollowVisitedUrlVisitor(visitor)));
+        urls.add(beginUrl);
 
-        while (counter.value() != 0) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new CrawlerException("There was a problem with some thread.", e);
+        while (true) {
+            if ((urls.size() != 0) && (counter.value() < 1000)) {
+                for (int i = 0; i < 100; i++) {
+                    executor.execute(new PageCrawlerExecutor(counter, urls, downloader, normalizer, visitor));
+                }
+            } else {
+                while (counter.value() != 0) {
+                    Thread.yield();
+                }
+                if (urls.size() == 0) {
+                    break;
+                }
             }
-        }
+            Thread.yield();
 
+        }
     }
 }
