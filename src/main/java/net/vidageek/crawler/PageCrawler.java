@@ -3,7 +3,6 @@
  */
 package net.vidageek.crawler;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -15,7 +14,6 @@ import net.vidageek.crawler.component.LinkNormalizer;
 import net.vidageek.crawler.component.PageCrawlerExecutor;
 import net.vidageek.crawler.component.WebDownloader;
 import net.vidageek.crawler.exception.CrawlerException;
-import net.vidageek.crawler.visitor.DoesNotFollowLongUrls;
 import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
 
 import org.apache.log4j.Logger;
@@ -59,36 +57,19 @@ public class PageCrawler {
         }
 
         ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>(1200));
+                new LinkedBlockingQueue<Runnable>());
 
-        monitorCrawling(executor, new DoesNotFollowLongUrls(new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
-
-    }
-
-    private void monitorCrawling(final ThreadPoolExecutor executor, final PageVisitor visitor) {
         final ExecutorCounter counter = new ExecutorCounter();
-        ConcurrentLinkedQueue<String> urls = new ConcurrentLinkedQueue<String>();
 
-        urls.add(beginUrl);
+        executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
+                new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
 
-        while (true) {
-            log.debug("url pool size: " + urls.size());
-            log.debug("Number of Executors running: " + counter.value());
-            if ((urls.size() != 0) && (counter.value() < 1000)) {
-                for (int i = 0; i < 100; i++) {
-                    executor.execute(new PageCrawlerExecutor(counter, urls, downloader, normalizer, visitor));
-                }
-            } else {
-                while ((counter.value() != 0) && (urls.size() == 0)) {
-                    log.debug("Number of Executors running: " + counter.value());
-                    sleep();
-                }
-                if (urls.size() == 0) {
-                    break;
-                }
-            }
+        while (counter.value() != 0) {
+            log.debug("executors executed: " + executor.getCompletedTaskCount());
+            log.debug("Number of Executors alive: " + counter.value());
             sleep();
         }
+
     }
 
     private void sleep() {

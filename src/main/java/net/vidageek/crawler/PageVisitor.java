@@ -9,6 +9,6 @@ package net.vidageek.crawler;
  */
 public interface PageVisitor extends ContentVisitor {
 
-    boolean followUrl(String url);
+    boolean followUrl(Url url);
 
 }

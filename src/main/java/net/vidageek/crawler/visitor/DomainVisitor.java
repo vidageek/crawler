@@ -10,6 +10,7 @@ import net.vidageek.crawler.ContentVisitor;
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.PageVisitor;
 import net.vidageek.crawler.Status;
+import net.vidageek.crawler.Url;
 
 /**
  * Simple visitor to crawl a single domain.
@@ -34,16 +35,16 @@ public class DomainVisitor implements PageVisitor {
         domain = matcher.group(1) + "/";
     }
 
-    public boolean followUrl(final String url) {
+    public boolean followUrl(final Url url) {
         if (url == null) {
             return false;
         }
-        return url.startsWith(domain);
+        return url.link().startsWith(domain);
     }
 
     // Delegate methods
 
-    public void onError(final String url, final Status statusError) {
+    public void onError(final Url url, final Status statusError) {
         visitor.onError(url, statusError);
     }
 

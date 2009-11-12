@@ -24,6 +24,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.commons.httpclient.params.HttpClientParams;
 
 /**
  * @author jonasabreu
@@ -46,6 +47,9 @@ public class WebDownloader implements Downloader {
 
             String encodedUrl = encode(url);
             final HttpClient client = new HttpClient();
+            HttpClientParams params = new HttpClientParams();
+            params.setSoTimeout(15000);
+            client.setParams(params);
 
             GetMethod method = new GetMethod(encodedUrl);
             Status status = Status.fromHttpCode(client.executeMethod(method));

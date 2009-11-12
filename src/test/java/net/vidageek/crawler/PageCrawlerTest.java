@@ -68,7 +68,7 @@ public class PageCrawlerTest {
 
                 one(visitor).visit(with(any(OkPage.class)));
 
-                one(visitor).followUrl(with(any(String.class)));
+                one(visitor).followUrl(with(any(Url.class)));
                 will(returnValue(false));
             }
         });
