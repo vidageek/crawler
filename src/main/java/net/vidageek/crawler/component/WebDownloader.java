@@ -52,17 +52,21 @@ public class WebDownloader implements Downloader {
             client.setParams(params);
 
             GetMethod method = new GetMethod(encodedUrl);
-            Status status = Status.fromHttpCode(client.executeMethod(method));
+            try {
+                Status status = Status.fromHttpCode(client.executeMethod(method));
 
-            if (!acceptsMimeType(method.getResponseHeader("Content-Type"))) {
-                return new RejectedMimeTypePage(url, status, method.getResponseHeader("Content-Type").getValue());
-            }
+                if (!acceptsMimeType(method.getResponseHeader("Content-Type"))) {
+                    return new RejectedMimeTypePage(url, status, method.getResponseHeader("Content-Type").getValue());
+                }
 
-            if (Status.OK.equals(status)) {
-                return new OkPage(url, read(method.getResponseBodyAsStream(), method.getResponseCharSet()), method
-                    .getResponseCharSet());
+                if (Status.OK.equals(status)) {
+                    return new OkPage(url, read(method.getResponseBodyAsStream(), method.getResponseCharSet()), method
+                        .getResponseCharSet());
+                }
+                return new ErrorPage(url, status);
+            } finally {
+                method.releaseConnection();
             }
-            return new ErrorPage(url, status);
 
         } catch (HttpException e) {
             throw new CrawlerException("Could not retrieve data from " + url, e);
@@ -92,6 +96,12 @@ public class WebDownloader implements Downloader {
             return new String(encodedString.getBytes("UTF-8"), "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new CrawlerException("Encode not supported: " + charset, e);
+        } finally {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                throw new CrawlerException("Could not close InputStream.", e);
+            }
         }
     }
 
