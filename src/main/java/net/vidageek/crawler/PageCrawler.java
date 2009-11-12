@@ -55,7 +55,7 @@ public class PageCrawler {
         ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
                 new LinkedBlockingQueue<Runnable>(1200));
 
-        monitorCrawling(executor, new DoesNotFollowVisitedUrlVisitor(visitor));
+        monitorCrawling(executor, new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor));
 
     }
 

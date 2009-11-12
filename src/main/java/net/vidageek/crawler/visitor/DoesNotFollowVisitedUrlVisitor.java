@@ -18,8 +18,9 @@ final public class DoesNotFollowVisitedUrlVisitor implements PageVisitor {
     // implementation
     private final Map<String, String> visitedUrls = new ConcurrentHashMap<String, String>();
 
-    public DoesNotFollowVisitedUrlVisitor(final PageVisitor visitor) {
+    public DoesNotFollowVisitedUrlVisitor(final String beginUrl, final PageVisitor visitor) {
         this.visitor = visitor;
+        visitedUrls.put(beginUrl, "");
     }
 
     public boolean followUrl(final String url) {

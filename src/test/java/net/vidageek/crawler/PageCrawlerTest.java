@@ -79,7 +79,7 @@ public class PageCrawlerTest {
     public void testThatCrawlerAvoidCircles() {
         mockery.checking(new Expectations() {
             {
-                one(downloader).get(with(any(String.class)));
+                one(downloader).get("http://test.com");
                 will(returnValue(new OkPage("http://test.com",
                         "<a href=\"http://test.com\"><a href=\"http://test.com\">", "UTF-8")));
 
