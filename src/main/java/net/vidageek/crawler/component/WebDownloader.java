@@ -20,11 +20,12 @@ import net.vidageek.crawler.page.ErrorPage;
 import net.vidageek.crawler.page.OkPage;
 import net.vidageek.crawler.page.RejectedMimeTypePage;
 
+import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
 import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpClientParams;
+import org.apache.commons.httpclient.params.HttpMethodParams;
 
 /**
  * @author jonasabreu
@@ -47,9 +48,10 @@ public class WebDownloader implements Downloader {
 
             String encodedUrl = encode(url);
             final HttpClient client = new HttpClient();
-            HttpClientParams params = new HttpClientParams();
-            params.setSoTimeout(15000);
-            client.setParams(params);
+            client.getParams().setSoTimeout(15000);
+            client
+                .getParams()
+                .setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
 
             GetMethod method = new GetMethod(encodedUrl);
             try {

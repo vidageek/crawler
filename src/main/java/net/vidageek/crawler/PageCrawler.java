@@ -65,7 +65,7 @@ public class PageCrawler {
                 new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
 
         while (counter.value() != 0) {
-            log.debug("executors executed: " + executor.getCompletedTaskCount());
+            log.debug("executors that finished: " + executor.getCompletedTaskCount());
             log.debug("Number of Executors alive: " + counter.value());
             sleep();
         }
