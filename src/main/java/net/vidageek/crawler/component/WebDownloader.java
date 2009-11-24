@@ -52,6 +52,7 @@ public class WebDownloader implements Downloader {
             client
                 .getParams()
                 .setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
+            client.getParams().setParameter(HttpMethodParams.USER_AGENT, "Page Crawler");
 
             GetMethod method = new GetMethod(encodedUrl);
             try {
