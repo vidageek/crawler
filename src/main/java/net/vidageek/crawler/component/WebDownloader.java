@@ -55,6 +55,7 @@ public class WebDownloader implements Downloader {
             client.getParams().setParameter(HttpMethodParams.USER_AGENT, "Page Crawler");
 
             GetMethod method = new GetMethod(encodedUrl);
+            method.addRequestHeader(new Header("Accept", "*/*"));
             try {
                 Status status = Status.fromHttpCode(client.executeMethod(method));
 
