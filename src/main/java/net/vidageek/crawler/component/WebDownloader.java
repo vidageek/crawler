@@ -61,7 +61,10 @@ public class WebDownloader implements Downloader {
                 }
 
                 if (Status.OK.equals(status)) {
-                    final String charset = EntityUtils.getContentCharSet(response.getEntity());
+                    String charset = EntityUtils.getContentCharSet(response.getEntity());
+                    if (charset == null) {
+                        charset = "UTF-8";
+                    }
                     return new OkPage(url, read(response.getEntity().getContent(), charset), charset);
                 }
                 return new ErrorPage(url, status);

@@ -61,15 +61,18 @@ public class PageCrawler {
 
         final ExecutorCounter counter = new ExecutorCounter();
 
-        executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
-                new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
+        try {
+            executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
+                    new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
 
-        while (counter.value() != 0) {
-            log.debug("executors that finished: " + executor.getCompletedTaskCount());
-            log.debug("Number of Executors alive: " + counter.value());
-            sleep();
+            while (counter.value() != 0) {
+                log.debug("executors that finished: " + executor.getCompletedTaskCount());
+                log.debug("Number of Executors alive: " + counter.value());
+                sleep();
+            }
+        } finally {
+            executor.shutdown();
         }
-
     }
 
     private void sleep() {
