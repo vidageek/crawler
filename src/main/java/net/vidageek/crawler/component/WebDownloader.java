@@ -20,12 +20,12 @@ import net.vidageek.crawler.page.ErrorPage;
 import net.vidageek.crawler.page.OkPage;
 import net.vidageek.crawler.page.RejectedMimeTypePage;
 
-import org.apache.commons.httpclient.DefaultHttpMethodRetryHandler;
-import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
-import org.apache.commons.httpclient.params.HttpMethodParams;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 /**
  * @author jonasabreu
@@ -47,41 +47,35 @@ public class WebDownloader implements Downloader {
         try {
 
             String encodedUrl = encode(url);
-            final HttpClient client = new HttpClient();
-            client.getParams().setSoTimeout(15000);
-            client
-                .getParams()
-                .setParameter(HttpMethodParams.RETRY_HANDLER, new DefaultHttpMethodRetryHandler(0, false));
+            final HttpClient client = new DefaultHttpClient();
+            client.getParams().setIntParameter("http.socket.timeout", 15000);
 
-            GetMethod method = new GetMethod(encodedUrl);
-            method.addRequestHeader(new Header("Accept", "*/*"));
-            method.addRequestHeader(new Header("User-Agent", "Crawler/1.0"));
+            HttpGet method = new HttpGet(encodedUrl);
 
             try {
-                Status status = Status.fromHttpCode(client.executeMethod(method));
+                HttpResponse response = client.execute(method);
+                Status status = Status.fromHttpCode(response.getStatusLine().getStatusCode());
 
-                if (!acceptsMimeType(method.getResponseHeader("Content-Type"))) {
-                    return new RejectedMimeTypePage(url, status, method.getResponseHeader("Content-Type").getValue());
+                if (!acceptsMimeType(response.getLastHeader("Content-Type"))) {
+                    return new RejectedMimeTypePage(url, status, method.getLastHeader("Content-Type").getValue());
                 }
 
                 if (Status.OK.equals(status)) {
-                    return new OkPage(url, read(method.getResponseBodyAsStream(), method.getResponseCharSet()), method
-                        .getResponseCharSet());
+                    final String charset = EntityUtils.getContentCharSet(response.getEntity());
+                    return new OkPage(url, read(response.getEntity().getContent(), charset), charset);
                 }
                 return new ErrorPage(url, status);
             } finally {
-                method.releaseConnection();
+                method.abort();
             }
 
-        } catch (HttpException e) {
-            throw new CrawlerException("Could not retrieve data from " + url, e);
         } catch (IOException e) {
             throw new CrawlerException("Could not retrieve data from " + url, e);
         }
     }
 
-    private boolean acceptsMimeType(final Header responseMimeType) {
-        final String value = responseMimeType.getValue();
+    private boolean acceptsMimeType(final Header header) {
+        final String value = header.getValue();
         if (value == null) {
             return false;
         }
