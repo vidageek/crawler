@@ -42,6 +42,16 @@
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
 		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu.adaptworks.icu4j</groupId>
+			<artifactId>core</artifactId>
+			<version>4.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.ibm.icu.adaptworks.icu4j</groupId>
+			<artifactId>charsets</artifactId>
+			<version>4.2.1</version>
+		</dependency>
 	</dependencies>
 	<reporting>
 		<plugins>
@@ -95,4 +105,10 @@
 			</roles>
 		</developer>
 	</developers>
+	<repositories>
+		<repository>
+			<id>Archiva interno</id>
+			<url>http://192.168.0.123:8081/archiva/repository/internal/</url>
+		</repository>
+	</repositories>
 </project>

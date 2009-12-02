@@ -3,14 +3,15 @@
  */
 package net.vidageek.crawler.component;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.vidageek.crawler.Page;
@@ -25,7 +26,11 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.util.EntityUtils;
+import org.apache.log4j.Logger;
+
+import com.ibm.icu.charset.CharsetProviderICU;
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
 /**
  * @author jonasabreu
@@ -33,95 +38,112 @@ import org.apache.http.util.EntityUtils;
  */
 public class WebDownloader implements Downloader {
 
-    private final ConcurrentLinkedQueue<String> mimeTypesToInclude;
+	private final ConcurrentLinkedQueue<String> mimeTypesToInclude;
 
-    public WebDownloader(final List<String> mimeTypesToInclude) {
-        this.mimeTypesToInclude = new ConcurrentLinkedQueue<String>(mimeTypesToInclude);
-    }
+	private final Logger log = Logger.getLogger(WebDownloader.class);
 
-    public WebDownloader() {
-        this(Arrays.asList("text/html"));
-    }
+	public WebDownloader(final List<String> mimeTypesToInclude) {
+		this.mimeTypesToInclude = new ConcurrentLinkedQueue<String>(mimeTypesToInclude);
+	}
 
-    public Page get(final String url) {
-        try {
+	public WebDownloader() {
+		this(Arrays.asList("text/html"));
+	}
 
-            String encodedUrl = encode(url);
-            final HttpClient client = new DefaultHttpClient();
-            client.getParams().setIntParameter("http.socket.timeout", 15000);
+	public Page get(final String url) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		client.getParams().setIntParameter("http.socket.timeout", 15000);
+		return get(client, url);
+	}
 
-            HttpGet method = new HttpGet(encodedUrl);
+	public Page get(final HttpClient client, final String url) {
+		try {
+			String encodedUrl = encode(url);
+			HttpGet method = new HttpGet(encodedUrl);
 
-            try {
-                HttpResponse response = client.execute(method);
-                Status status = Status.fromHttpCode(response.getStatusLine().getStatusCode());
+			try {
+				HttpResponse response = client.execute(method);
+				Status status = Status.fromHttpCode(response.getStatusLine().getStatusCode());
 
-                if (!acceptsMimeType(response.getLastHeader("Content-Type"))) {
-                    return new RejectedMimeTypePage(url, status, method.getLastHeader("Content-Type").getValue());
-                }
+				if (!acceptsMimeType(response.getLastHeader("Content-Type"))) {
+					return new RejectedMimeTypePage(url, status, method.getLastHeader("Content-Type").getValue());
+				}
 
-                if (Status.OK.equals(status)) {
-                    String charset = EntityUtils.getContentCharSet(response.getEntity());
-                    if (charset == null) {
-                        charset = "UTF-8";
-                    }
-                    return new OkPage(url, read(response.getEntity().getContent(), charset), charset);
-                }
-                return new ErrorPage(url, status);
-            } finally {
-                method.abort();
-            }
+				if (Status.OK.equals(status)) {
+					CharsetDetector detector = new CharsetDetector();
+					detector.setText(read(response.getEntity().getContent()));
+					CharsetMatch match = detector.detect();
 
-        } catch (IOException e) {
-            throw new CrawlerException("Could not retrieve data from " + url, e);
-        }
-    }
+					log.debug("Detected charset: " + match.getName());
 
-    private boolean acceptsMimeType(final Header header) {
-        final String value = header.getValue();
-        if (value == null) {
-            return false;
-        }
+					String content = match.getString();
+					CharBuffer buffer = CharBuffer.wrap(content.toCharArray());
+					Charset utf8Charset = new CharsetProviderICU().charsetForName("UTF-8");
+					String utf8Content = new String(utf8Charset.encode(buffer).array(), "UTF-8");
 
-        for (String mimeType : mimeTypesToInclude) {
-            if (value.contains(mimeType)) {
-                return true;
-            }
-        }
-        return false;
-    }
+					return new OkPage(url, utf8Content);
+				}
+				return new ErrorPage(url, status);
+			} finally {
+				method.abort();
+			}
 
-    private String read(final InputStream inputStream, final String charset) {
-        try {
-            String encodedString = new Scanner(new InputStreamReader(inputStream, charset)).useDelimiter("$$").next();
+		} catch (IOException e) {
+			throw new CrawlerException("Could not retrieve data from " + url, e);
+		}
+	}
 
-            return new String(encodedString.getBytes("UTF-8"), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new CrawlerException("Encode not supported: " + charset, e);
-        } finally {
-            try {
-                inputStream.close();
-            } catch (IOException e) {
-                throw new CrawlerException("Could not close InputStream.", e);
-            }
-        }
-    }
+	private boolean acceptsMimeType(final Header header) {
+		final String value = header.getValue();
+		if (value == null) {
+			return false;
+		}
 
-    private String encode(final String url) {
-        String res = "";
-        for (char c : url.toCharArray()) {
-            if (!":/.?#=".contains("" + c)) {
-                try {
-                    res += URLEncoder.encode("" + c, "UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    throw new CrawlerException(
-                            "There is something really wrong with your JVM. It could not find UTF-8 encoding.", e);
-                }
-            } else {
-                res += c;
-            }
-        }
+		for (String mimeType : mimeTypesToInclude) {
+			if (value.contains(mimeType)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-        return res;
-    }
+	private InputStream read(final InputStream inputStream) {
+		byte[] bytes = new byte[1000];
+		int i = 0;
+		int b;
+		try {
+			while ((b = inputStream.read()) != -1) {
+				bytes[i++] = (byte) b;
+				if (bytes.length == i) {
+					byte[] newBytes = new byte[(bytes.length * 3) / 2 + 1];
+					for (int j = 0; j < bytes.length; j++) {
+						newBytes[j] = bytes[j];
+					}
+					bytes = newBytes;
+				}
+			}
+		} catch (IOException e) {
+			new CrawlerException("There was a problem reading stream.", e);
+		}
+		return new ByteArrayInputStream(bytes, 0, i);
+	}
+
+	private String encode(final String url) {
+		String res = "";
+		for (char c : url.toCharArray()) {
+			if (!":/.?#=".contains("" + c)) {
+				try {
+					res += URLEncoder.encode("" + c, "UTF-8");
+				} catch (UnsupportedEncodingException e) {
+					throw new CrawlerException(
+							"There is something really wrong with your JVM. It could not find UTF-8 encoding.", e);
+				}
+			} else {
+				res += c;
+			}
+		}
+
+		return res;
+	}
+
 }
