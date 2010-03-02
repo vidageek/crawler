@@ -3,7 +3,6 @@
  */
 package net.vidageek.crawler.component;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -107,7 +106,7 @@ public class WebDownloader implements Downloader {
 		return false;
 	}
 
-	private InputStream read(final InputStream inputStream) {
+	private byte[] read(final InputStream inputStream) {
 		byte[] bytes = new byte[1000];
 		int i = 0;
 		int b;
@@ -125,7 +124,10 @@ public class WebDownloader implements Downloader {
 		} catch (IOException e) {
 			new CrawlerException("There was a problem reading stream.", e);
 		}
-		return new ByteArrayInputStream(bytes, 0, i);
+
+		byte[] copy = Arrays.copyOf(bytes, i);
+
+		return copy;
 	}
 
 	private String encode(final String url) {
