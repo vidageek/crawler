@@ -9,6 +9,7 @@ import java.util.List;
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
 import net.vidageek.crawler.link.DefaultLinkFinder;
+import net.vidageek.crawler.link.FrameLinkFinder;
 import net.vidageek.crawler.link.IframeLinkFinder;
 
 /**
@@ -33,6 +34,7 @@ public class OkPage implements Page {
 		List<String> list = new ArrayList<String>();
 		list.addAll(new DefaultLinkFinder(content).getLinks());
 		list.addAll(new IframeLinkFinder(content).getLinks());
+		list.addAll(new FrameLinkFinder(content).getLinks());
 
 		return list;
 	}
