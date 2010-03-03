@@ -56,7 +56,7 @@ public class PageCrawler {
 			throw new NullPointerException("visitor cannot be null");
 		}
 
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
 				new LinkedBlockingQueue<Runnable>());
 
 		final ExecutorCounter counter = new ExecutorCounter();
