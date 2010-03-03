@@ -45,13 +45,6 @@ public class DefaultLinkNormalizerTest {
 	}
 
 	@Test
-	public void testThatIgnoresInnerLinks() {
-		String url = new DefaultLinkNormalizer("http://test.com/foo").normalize("#link");
-
-		assertEquals("http://test.com/foo", url);
-	}
-
-	@Test
 	public void testThatNormalizesUrl1() {
 		String url = new DefaultLinkNormalizer("http://test.com/foo").normalize("../bar");
 
@@ -70,13 +63,6 @@ public class DefaultLinkNormalizerTest {
 		String url = new DefaultLinkNormalizer("http://test.com/foo.html").normalize("bar/foo.html");
 
 		assertEquals("http://test.com/bar/foo.html", url);
-	}
-
-	@Test
-	public void testThatNormalizesUrl4() {
-		String url = new DefaultLinkNormalizer("http://test.com/foo").normalize("bar.html");
-
-		assertEquals("http://test.com/foo/bar.html", url);
 	}
 
 	@Test
