@@ -58,6 +58,7 @@ public class WebDownloader implements Downloader {
 	public Page get(final HttpClient client, final String url) {
 		try {
 			String encodedUrl = encode(url);
+			log.debug("Requesting url: [" + encodedUrl + "]");
 			HttpGet method = new HttpGet(encodedUrl);
 
 			try {
@@ -133,7 +134,7 @@ public class WebDownloader implements Downloader {
 	private String encode(final String url) {
 		String res = "";
 		for (char c : url.toCharArray()) {
-			if (!":/.?#=".contains("" + c)) {
+			if (!":/.?&#=".contains("" + c)) {
 				try {
 					res += URLEncoder.encode("" + c, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
