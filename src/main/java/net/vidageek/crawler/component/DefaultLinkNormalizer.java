@@ -13,7 +13,7 @@ public class DefaultLinkNormalizer implements LinkNormalizer {
 	private final String beginUrl;
 
 	public DefaultLinkNormalizer(final String beginUrl) {
-		if (beginUrl == null || beginUrl.trim().length() == 0) {
+		if ((beginUrl == null) || (beginUrl.trim().length() == 0)) {
 			throw new IllegalArgumentException("beginUrl cannot be null or empty");
 		}
 
@@ -23,7 +23,10 @@ public class DefaultLinkNormalizer implements LinkNormalizer {
 		this.beginUrl = beginUrl;
 	}
 
-	public String normalize(final String url) {
+	public String normalize(String url) {
+
+		url = url.replaceAll("&amp;", "&");
+
 		if (url.startsWith("http://") || url.startsWith("https://")) {
 			return url;
 		}

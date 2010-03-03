@@ -3,12 +3,11 @@
  */
 package net.vidageek.crawler;
 
+import static org.junit.Assert.assertEquals;
 import net.vidageek.crawler.component.DefaultLinkNormalizer;
 import net.vidageek.crawler.exception.CrawlerException;
 
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
 
 /**
  * @author jonasabreu
@@ -92,6 +91,14 @@ public class DefaultLinkNormalizerTest {
 		String url = new DefaultLinkNormalizer("http://test.com/foo/bar").normalize("../../bar.html");
 
 		assertEquals("http://test.com/bar.html", url);
+	}
+
+	@Test
+	public void testThatReplaceEntityAmpForAmp() {
+		String normalize = new DefaultLinkNormalizer("http://www.test.com").normalize("/web?param=1&amp;param2=2");
+
+		assertEquals("http://www.test.com/web?param=1&param2=2", normalize);
+
 	}
 
 }

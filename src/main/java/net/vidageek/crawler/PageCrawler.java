@@ -24,63 +24,63 @@ import org.apache.log4j.Logger;
  */
 public class PageCrawler {
 
-    private final String beginUrl;
+	private final String beginUrl;
 
-    private final Downloader downloader;
+	private final Downloader downloader;
 
-    private final LinkNormalizer normalizer;
+	private final LinkNormalizer normalizer;
 
-    private final Logger log = Logger.getLogger(PageCrawler.class);
+	private final Logger log = Logger.getLogger(PageCrawler.class);
 
-    public PageCrawler(final String beginUrl) {
-        this(beginUrl, new WebDownloader(), new DefaultLinkNormalizer(beginUrl));
-    }
+	public PageCrawler(final String beginUrl) {
+		this(beginUrl, new WebDownloader(), new DefaultLinkNormalizer(beginUrl));
+	}
 
-    public PageCrawler(final String beginUrl, final Downloader downloader, final LinkNormalizer normalizer) {
-        if (beginUrl == null) {
-            throw new IllegalArgumentException("beginUrl cannot be null");
-        }
-        if (beginUrl.trim().length() == 0) {
-            throw new IllegalArgumentException("beginUrl cannot be empty");
-        }
-        if (!beginUrl.startsWith("http://")) {
-            throw new IllegalArgumentException("beginUrl must start with http://");
-        }
-        this.beginUrl = beginUrl;
-        this.downloader = downloader;
-        this.normalizer = normalizer;
-    }
+	public PageCrawler(final String beginUrl, final Downloader downloader, final LinkNormalizer normalizer) {
+		if (beginUrl == null) {
+			throw new IllegalArgumentException("beginUrl cannot be null");
+		}
+		if (beginUrl.trim().length() == 0) {
+			throw new IllegalArgumentException("beginUrl cannot be empty");
+		}
+		if (!beginUrl.startsWith("http://")) {
+			throw new IllegalArgumentException("beginUrl must start with http://");
+		}
+		this.beginUrl = beginUrl;
+		this.downloader = downloader;
+		this.normalizer = normalizer;
+	}
 
-    public void crawl(final PageVisitor visitor) {
-        if (visitor == null) {
-            throw new NullPointerException("visitor cannot be null");
-        }
+	public void crawl(final PageVisitor visitor) {
+		if (visitor == null) {
+			throw new NullPointerException("visitor cannot be null");
+		}
 
-        ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<Runnable>());
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(1, 1, 30, TimeUnit.SECONDS,
+				new LinkedBlockingQueue<Runnable>());
 
-        final ExecutorCounter counter = new ExecutorCounter();
+		final ExecutorCounter counter = new ExecutorCounter();
 
-        try {
-            executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
-                    new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
+		try {
+			executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
+					new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
 
-            while (counter.value() != 0) {
-                log.debug("executors that finished: " + executor.getCompletedTaskCount());
-                log.debug("Number of Executors alive: " + counter.value());
-                sleep();
-            }
-        } finally {
-            executor.shutdown();
-        }
-    }
+			while (counter.value() != 0) {
+				log.debug("executors that finished: " + executor.getCompletedTaskCount());
+				log.debug("Number of Executors alive: " + counter.value());
+				sleep();
+			}
+		} finally {
+			executor.shutdown();
+		}
+	}
 
-    private void sleep() {
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            throw new CrawlerException("main thread died. ", e);
-        }
+	private void sleep() {
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			throw new CrawlerException("main thread died. ", e);
+		}
 
-    }
+	}
 }
