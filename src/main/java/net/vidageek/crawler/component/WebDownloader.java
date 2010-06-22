@@ -66,7 +66,7 @@ public class WebDownloader implements Downloader {
 				Status status = Status.fromHttpCode(response.getStatusLine().getStatusCode());
 
 				if (!acceptsMimeType(response.getLastHeader("Content-Type"))) {
-					return new RejectedMimeTypePage(url, status, method.getLastHeader("Content-Type").getValue());
+					return new RejectedMimeTypePage(url, status, response.getLastHeader("Content-Type").getValue());
 				}
 
 				if (Status.OK.equals(status)) {
