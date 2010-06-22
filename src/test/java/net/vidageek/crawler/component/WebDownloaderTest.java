@@ -3,8 +3,6 @@ package net.vidageek.crawler.component;
 import junit.framework.Assert;
 import net.vidageek.crawler.Page;
 
-import org.apache.http.client.HttpClient;
-import org.jmock.Mockery;
 import org.junit.Test;
 
 /**
@@ -28,9 +26,4 @@ final public class WebDownloaderTest {
 		Assert.assertTrue(page.getContent().contains("google"));
 	}
 
-	@Test
-	public void testThatContentPageWasEncodedCorrect() {
-		Mockery mockery = new Mockery();
-		HttpClient client = mockery.mock(HttpClient.class);
-	}
 }
