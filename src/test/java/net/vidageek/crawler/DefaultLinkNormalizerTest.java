@@ -5,7 +5,6 @@ package net.vidageek.crawler;
 
 import static org.junit.Assert.assertEquals;
 import net.vidageek.crawler.component.DefaultLinkNormalizer;
-import net.vidageek.crawler.exception.CrawlerException;
 
 import org.junit.Test;
 
@@ -23,11 +22,6 @@ public class DefaultLinkNormalizerTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfUrlIsEmpty() {
 		new DefaultLinkNormalizer("  \n  \t  ");
-	}
-
-	@Test(expected = CrawlerException.class)
-	public void testThatThrowsExceptionIfUrlDoenstBeginsWithHttp() {
-		new DefaultLinkNormalizer("something just to break");
 	}
 
 	@Test

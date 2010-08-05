@@ -53,7 +53,7 @@ public class PageCrawlerTest {
 		new PageCrawler("url", downloader, normalizer);
 	}
 
-	@Test(expected = NullPointerException.class)
+	@Test(expected = IllegalArgumentException.class)
 	public void testThatThrowsExceptionIfVisitorIsNull() {
 		new PageCrawler("http://asdasdasdasdasd", downloader, normalizer).crawl(null);
 	}

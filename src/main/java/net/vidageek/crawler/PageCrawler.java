@@ -3,14 +3,16 @@
  */
 package net.vidageek.crawler;
 
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import net.vidageek.crawler.component.Downloader;
 import net.vidageek.crawler.component.ExecutorCounter;
+import net.vidageek.crawler.component.LinkNormalizer;
 import net.vidageek.crawler.component.PageCrawlerExecutor;
 import net.vidageek.crawler.config.CrawlerConfiguration;
 import net.vidageek.crawler.exception.CrawlerException;
+import net.vidageek.crawler.queue.DelayedBlockingQueue;
 import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
 
 import org.apache.log4j.Logger;
@@ -30,16 +32,22 @@ public class PageCrawler {
 	}
 
 	public PageCrawler(final String beginUrl) {
-		this(new CrawlerConfiguration(beginUrl));
+		this(CrawlerConfiguration.forStartPoint(beginUrl).build());
+	}
+
+	public PageCrawler(final String beginUrl, final Downloader downloader, final LinkNormalizer normalizer) {
+		config = CrawlerConfiguration.forStartPoint(beginUrl).withDownloader(downloader).withLinkNormalizer(normalizer)
+				.build();
 	}
 
 	public void crawl(final PageVisitor visitor) {
 		if (visitor == null) {
-			throw new NullPointerException("visitor cannot be null");
+			throw new IllegalArgumentException("visitor cannot be null");
 		}
 
 		ThreadPoolExecutor executor = new ThreadPoolExecutor(config.minPoolSize(), config.maxPoolSize(), config
-				.keepAliveMilliseconds(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
+				.keepAliveMilliseconds(), TimeUnit.MILLISECONDS, new DelayedBlockingQueue(config
+				.requestDelayMilliseconds()));
 
 		final ExecutorCounter counter = new ExecutorCounter();
 
