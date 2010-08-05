@@ -7,12 +7,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import net.vidageek.crawler.component.DefaultLinkNormalizer;
-import net.vidageek.crawler.component.Downloader;
 import net.vidageek.crawler.component.ExecutorCounter;
-import net.vidageek.crawler.component.LinkNormalizer;
 import net.vidageek.crawler.component.PageCrawlerExecutor;
-import net.vidageek.crawler.component.WebDownloader;
+import net.vidageek.crawler.config.CrawlerConfiguration;
 import net.vidageek.crawler.exception.CrawlerException;
 import net.vidageek.crawler.visitor.DoesNotFollowVisitedUrlVisitor;
 
@@ -24,31 +21,16 @@ import org.apache.log4j.Logger;
  */
 public class PageCrawler {
 
-	private final String beginUrl;
-
-	private final Downloader downloader;
-
-	private final LinkNormalizer normalizer;
-
 	private final Logger log = Logger.getLogger(PageCrawler.class);
 
-	public PageCrawler(final String beginUrl) {
-		this(beginUrl, new WebDownloader(), new DefaultLinkNormalizer(beginUrl));
+	private final CrawlerConfiguration config;
+
+	public PageCrawler(final CrawlerConfiguration config) {
+		this.config = config;
 	}
 
-	public PageCrawler(final String beginUrl, final Downloader downloader, final LinkNormalizer normalizer) {
-		if (beginUrl == null) {
-			throw new IllegalArgumentException("beginUrl cannot be null");
-		}
-		if (beginUrl.trim().length() == 0) {
-			throw new IllegalArgumentException("beginUrl cannot be empty");
-		}
-		if (!beginUrl.startsWith("http://")) {
-			throw new IllegalArgumentException("beginUrl must start with http://");
-		}
-		this.beginUrl = beginUrl;
-		this.downloader = downloader;
-		this.normalizer = normalizer;
+	public PageCrawler(final String beginUrl) {
+		this(new CrawlerConfiguration(beginUrl));
 	}
 
 	public void crawl(final PageVisitor visitor) {
@@ -56,14 +38,16 @@ public class PageCrawler {
 			throw new NullPointerException("visitor cannot be null");
 		}
 
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(30, 30, 30, TimeUnit.SECONDS,
-				new LinkedBlockingQueue<Runnable>());
+		ThreadPoolExecutor executor = new ThreadPoolExecutor(config.minPoolSize(), config.maxPoolSize(), config
+				.keepAliveMilliseconds(), TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>());
 
 		final ExecutorCounter counter = new ExecutorCounter();
 
 		try {
-			executor.execute(new PageCrawlerExecutor(new Url(beginUrl, 0), executor, counter, downloader, normalizer,
-					new DoesNotFollowVisitedUrlVisitor(beginUrl, visitor)));
+			executor
+					.execute(new PageCrawlerExecutor(new Url(config.beginUrl(), 0), executor, counter, config
+							.downloader(), config.normalizer(), new DoesNotFollowVisitedUrlVisitor(config.beginUrl(),
+							visitor)));
 
 			while (counter.value() != 0) {
 				log.debug("executors that finished: " + executor.getCompletedTaskCount());
