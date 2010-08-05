@@ -46,7 +46,7 @@ final public class CrawlerConfigurationBuilder {
 		return this;
 	}
 
-	public CrawlerConfigurationBuilder withRequestDelayMilliseconds(final int requestDelayMilliseconds) {
+	public CrawlerConfigurationBuilder withRequestDelay(final int requestDelayMilliseconds) {
 		configuration.requestDelayMilliseconds(requestDelayMilliseconds);
 		return this;
 	}
