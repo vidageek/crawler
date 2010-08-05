@@ -14,7 +14,6 @@ final public class DelayedBlockingQueue implements BlockingQueue<Runnable> {
 
 	private final BlockingQueue<Runnable> queue;
 	private final int delayInMilliseconds;
-	private final Object delayLock = new Object();
 	private volatile long lastSuccesfullPop;
 
 	public DelayedBlockingQueue(final int delayInMilliseconds) {
@@ -24,8 +23,8 @@ final public class DelayedBlockingQueue implements BlockingQueue<Runnable> {
 	}
 
 	public Runnable poll() {
-		synchronized (delayLock) {
-			while (System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) {
+		synchronized (queue) {
+			while ((System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) && !queue.isEmpty()) {
 				sleep();
 			}
 			lastSuccesfullPop = System.currentTimeMillis();
@@ -34,8 +33,8 @@ final public class DelayedBlockingQueue implements BlockingQueue<Runnable> {
 	}
 
 	public Runnable poll(final long timeout, final TimeUnit unit) throws InterruptedException {
-		synchronized (delayLock) {
-			while (System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) {
+		synchronized (queue) {
+			while ((System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) && !queue.isEmpty()) {
 				sleep();
 			}
 			lastSuccesfullPop = System.currentTimeMillis();
@@ -44,8 +43,8 @@ final public class DelayedBlockingQueue implements BlockingQueue<Runnable> {
 	}
 
 	public Runnable take() throws InterruptedException {
-		synchronized (delayLock) {
-			while (System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) {
+		synchronized (queue) {
+			while ((System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) && !queue.isEmpty()) {
 				sleep();
 			}
 			lastSuccesfullPop = System.currentTimeMillis();
@@ -54,8 +53,8 @@ final public class DelayedBlockingQueue implements BlockingQueue<Runnable> {
 	}
 
 	public Runnable remove() {
-		synchronized (delayLock) {
-			while (System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) {
+		synchronized (queue) {
+			while ((System.currentTimeMillis() - lastSuccesfullPop <= delayInMilliseconds) && !queue.isEmpty()) {
 				sleep();
 			}
 			lastSuccesfullPop = System.currentTimeMillis();
