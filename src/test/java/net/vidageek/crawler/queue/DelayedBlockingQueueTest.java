@@ -25,7 +25,7 @@ final public class DelayedBlockingQueueTest {
 
 		System.out.println("First: [" + first + "] Last: [" + last + "]");
 		Assert.assertTrue(last > 1000);
-		Assert.assertTrue(last < 1150);
+		Assert.assertTrue(last < 1300);
 	}
 
 	@Test
@@ -42,7 +42,7 @@ final public class DelayedBlockingQueueTest {
 
 		System.out.println("First: [" + first + "] Last: [" + last + "]");
 		Assert.assertTrue(last > 1000);
-		Assert.assertTrue(last < 1150);
+		Assert.assertTrue(last < 1300);
 	}
 
 	@Test
@@ -59,7 +59,7 @@ final public class DelayedBlockingQueueTest {
 
 		System.out.println("First: [" + first + "] Last: [" + last + "]");
 		Assert.assertTrue(last > 1000);
-		Assert.assertTrue(last < 1150);
+		Assert.assertTrue(last < 1300);
 	}
 
 	@Test
@@ -76,7 +76,7 @@ final public class DelayedBlockingQueueTest {
 
 		System.out.println("First: [" + first + "] Last: [" + last + "]");
 		Assert.assertTrue(last > 1000);
-		Assert.assertTrue(last < 1150);
+		Assert.assertTrue(last < 1300);
 	}
 
 	public class FakeRunnable implements Runnable {
