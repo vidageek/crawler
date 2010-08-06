@@ -4,6 +4,8 @@ import net.vidageek.crawler.component.Downloader;
 import net.vidageek.crawler.component.LinkNormalizer;
 
 /**
+ * WARNING: This class is not thread-safe.
+ * 
  * @author jonasabreu
  * 
  */
@@ -31,16 +33,6 @@ final public class CrawlerConfigurationBuilder {
 		return this;
 	}
 
-	public CrawlerConfigurationBuilder withMinPoolSize(final int minPoolSize) {
-		configuration.minPoolSize(minPoolSize);
-		return this;
-	}
-
-	public CrawlerConfigurationBuilder withMaxPoolSize(final int maxPoolSize) {
-		configuration.maxPoolSize(maxPoolSize);
-		return this;
-	}
-
 	public CrawlerConfigurationBuilder withKeepAlive(final int keepAliveMilliseconds) {
 		configuration.keepAliveMilliseconds(keepAliveMilliseconds);
 		return this;
@@ -55,4 +47,9 @@ final public class CrawlerConfigurationBuilder {
 		return configuration;
 	}
 
+	public CrawlerConfigurationBuilder withMaxParallelRequests(final int numberOfRequests) {
+		configuration.maxPoolSize(numberOfRequests);
+		configuration.minPoolSize(numberOfRequests);
+		return this;
+	}
 }
