@@ -62,7 +62,13 @@ public class WebDownloader implements Downloader {
 	public Page get(final String url) {
 		DefaultHttpClient client = new DefaultHttpClient();
 		for (Cookie cookie : cookies) {
-			client.getCookieStore().addCookie(new BasicClientCookie(cookie.name(), cookie.value()));
+			String name = cookie.name();
+			String value = cookie.value();
+			log.debug("Creating cookie [" + name + " = " + value + "] " + cookie.domain());
+			BasicClientCookie clientCookie = new BasicClientCookie(name, value);
+			clientCookie.setPath(cookie.path());
+			clientCookie.setDomain(cookie.domain());
+			client.getCookieStore().addCookie(clientCookie);
 		}
 		client.getParams().setIntParameter("http.socket.timeout", 15000);
 		return get(client, url);
