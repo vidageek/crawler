@@ -9,12 +9,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
+import net.vidageek.crawler.config.http.Cookie;
 import net.vidageek.crawler.exception.CrawlerException;
 import net.vidageek.crawler.page.ErrorPage;
 import net.vidageek.crawler.page.OkPage;
@@ -25,6 +27,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.log4j.Logger;
 
 import com.ibm.icu.charset.CharsetProviderICU;
@@ -41,7 +44,14 @@ public class WebDownloader implements Downloader {
 
 	private final Logger log = Logger.getLogger(WebDownloader.class);
 
+	private final ConcurrentLinkedQueue<Cookie> cookies;
+
 	public WebDownloader(final List<String> mimeTypesToInclude) {
+		this(mimeTypesToInclude, new ArrayList<Cookie>());
+	}
+
+	public WebDownloader(final List<String> mimeTypesToInclude, final List<Cookie> cookies) {
+		this.cookies = new ConcurrentLinkedQueue<Cookie>(cookies);
 		this.mimeTypesToInclude = new ConcurrentLinkedQueue<String>(mimeTypesToInclude);
 	}
 
@@ -51,6 +61,9 @@ public class WebDownloader implements Downloader {
 
 	public Page get(final String url) {
 		DefaultHttpClient client = new DefaultHttpClient();
+		for (Cookie cookie : cookies) {
+			client.getCookieStore().addCookie(new BasicClientCookie(cookie.name(), cookie.value()));
+		}
 		client.getParams().setIntParameter("http.socket.timeout", 15000);
 		return get(client, url);
 	}
