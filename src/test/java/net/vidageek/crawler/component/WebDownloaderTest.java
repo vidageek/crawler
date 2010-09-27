@@ -1,6 +1,6 @@
 package net.vidageek.crawler.component;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import net.vidageek.crawler.Page;
 
 import org.junit.Test;
