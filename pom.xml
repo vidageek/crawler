@@ -110,5 +110,9 @@
 			<id>Archiva interno</id>
 			<url>http://192.168.0.123:8081/archiva/repository/internal/</url>
 		</repository>
+		<repository>
+			<id>Archiva external</id>
+			<url>http://adaptworks.dynalias.com:8081/archiva/repository/internal/</url>
+		</repository>
 	</repositories>
 </project>
