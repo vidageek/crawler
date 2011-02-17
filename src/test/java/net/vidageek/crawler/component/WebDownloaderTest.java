@@ -1,8 +1,8 @@
 package net.vidageek.crawler.component;
 
-import org.junit.Assert;
 import net.vidageek.crawler.Page;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 /**

@@ -1,6 +1,5 @@
 package net.vidageek.crawler.component;
 
-
 /**
  * @author jonasabreu
  */
@@ -21,4 +20,5 @@ public class DefaultLinkNormalizer implements LinkNormalizer {
 
 		return UrlUtils.resolveUrl(beginUrl, url);
 	}
+
 }

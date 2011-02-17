@@ -30,7 +30,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.log4j.Logger;
 
-import com.ibm.icu.charset.CharsetProviderICU;
 import com.ibm.icu.text.CharsetDetector;
 import com.ibm.icu.text.CharsetMatch;
 
@@ -97,7 +96,7 @@ public class WebDownloader implements Downloader {
 
 					String content = match.getString();
 					CharBuffer buffer = CharBuffer.wrap(content.toCharArray());
-					Charset utf8Charset = new CharsetProviderICU().charsetForName("UTF-8");
+					Charset utf8Charset = Charset.forName("UTF-8");
 					String utf8Content = new String(utf8Charset.encode(buffer).array(), "UTF-8");
 
 					return new OkPage(url, utf8Content);

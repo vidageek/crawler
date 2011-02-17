@@ -26,4 +26,14 @@ public class DefaultLinkFinderTest {
 		Assert.assertEquals("test.page1", links.get(0));
 		Assert.assertEquals("test.page2", links.get(1));
 	}
+
+	@Test
+	public void testCanRecoverLinksThatUsesJsessionid() {
+		List<String> links = new DefaultLinkFinder(
+				"<br /> <a id=\"link1\" href=\"test.page1\"></a><br />  <a id=\"link2\" href=\"test.page2;jsessionid=20\"></a>")
+				.getLinks();
+		Assert.assertEquals(2, links.size());
+		Assert.assertEquals("test.page1", links.get(0));
+		Assert.assertEquals("test.page2;jsessionid=20", links.get(1));
+	}
 }

@@ -33,24 +33,19 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.apache.httpcomponents</groupId>
-		    <artifactId>httpclient</artifactId>
-		    <version>4.0</version>
-		</dependency> 
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.0.3</version>
+		</dependency>
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.14</version>
 		</dependency>
 		<dependency>
-			<groupId>com.ibm.icu.adaptworks.icu4j</groupId>
-			<artifactId>core</artifactId>
-			<version>4.4.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.ibm.icu.adaptworks.icu4j</groupId>
-			<artifactId>charsets</artifactId>
-			<version>4.4.2</version>
+			<groupId>com.ibm.icu</groupId>
+			<artifactId>icu4j</artifactId>
+			<version>4.6</version>
 		</dependency>
 	</dependencies>
 	<reporting>
@@ -93,6 +88,38 @@
 			</plugin>
 		</plugins>
 	</build>
+	<profiles>
+		<profile>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<id>en</id>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>br.com.caelum.tubaina</groupId>
+						<artifactId>tubaina-maven-plugin</artifactId>
+						<version>1.1-SNAPSHOT</version>
+						<configuration>
+							<bookName>crawler</bookName>
+							<format>html</format>
+							<inputDir>src/docs/</inputDir>
+							<outputDir>target/tubaina</outputDir>
+							<templateDir>src/tubainaTemplates</templateDir>
+						</configuration>
+						<executions>
+							<execution>
+								<phase>install</phase>
+								<goals>
+									<goal>build</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 	<developers>
 		<developer>
 			<name>Jonas Abreu</name>
@@ -107,12 +134,8 @@
 	</developers>
 	<repositories>
 		<repository>
-			<id>Archiva interno</id>
-			<url>http://192.168.0.123:8081/archiva/repository/internal/</url>
-		</repository>
-		<repository>
 			<id>Archiva external</id>
-			<url>http://adaptworks.dynalias.com:8081/archiva/repository/internal/</url>
+			<url>http://adaptideas.dynalias.com:8081/archiva/repository/internal/</url>
 		</repository>
 	</repositories>
 </project>
