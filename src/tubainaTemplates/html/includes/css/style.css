@@ -1,0 +1,112 @@
+body {
+	background-color: #FFF;
+	font-family:"Trebuchet MS",Tahoma,Arial,Serif;
+	margin:0px;
+    padding:0px;
+}
+
+#page {
+	width:980px;
+	margin-left:20px;
+}
+
+a {
+	color: #666;
+}
+
+div.menu a {
+	text-decoration: none;
+}
+a:link {
+	color: #666;
+}     /* unvisited link */
+
+a:visited {
+	color: #666;
+}  /* visited link */
+a:hover {
+	color: #000;
+}   /* mouse over link */
+a:active {
+	color: #666;
+}   /* selected link */
+
+ul.chapter li {
+	list-style: none;
+}
+ul.chapter li:hover {
+	background-color: #A9A;	
+}
+img {
+	border: 0px;
+	width: 250px;
+}
+.header {
+	width: 100%;
+}
+.logo {
+	width:100%;
+}
+.slogan {
+	color:#666;
+	font-size:19px;
+	font-style:italic;
+	margin-bottom:0;
+	margin-left:68px;
+	margin-top:-17px;
+	width:100%;
+}
+.menu {
+	width: 180px;
+	float:left;
+	margin:10px;
+	background:#FFFFFF url(../images/menu.png) no-repeat scroll 0 0;
+}
+
+.menu ul {
+	margin:0px;
+	padding: 10px;
+}
+.subItem {
+	padding-left: 30px;	
+}
+.pageContent {
+	float:right;
+	margin:10px;
+	width:760px;
+	background:#FFFFFF url(../images/body.png) no-repeat scroll 0 0;
+	color: #666;
+	min-height: 600px;
+}
+
+h1.chapter, h2.section {
+	margin-left:40px;
+	margin-top:40px;
+	color: #000;
+}
+
+span.paragraph {
+	display:block;
+	margin-bottom:10px;
+	margin-left:40px;
+}
+
+li span.paragraph {
+	margin-left:10px;
+}
+
+div.java, div.xml {
+	margin-left:40px;
+	margin-bottom:10px;
+}
+
+img.lang {
+	display:inline;
+	margin-left:5px;
+	width:20px;
+}
+
+/*PayPal*/
+div.donation {
+	margin-left: 20px;
+}
