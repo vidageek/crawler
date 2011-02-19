@@ -90,9 +90,6 @@
 	</build>
 	<profiles>
 		<profile>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<id>en</id>
 			<build>
 				<plugins>
