@@ -5,7 +5,7 @@
 		<meta http-equiv="Content-Language" content="English" />
 		<link rel="stylesheet" type="text/css" href="${relative}/includes/css/style.css" />
 		<link rel="stylesheet" type="text/css" href="${relative}/includes/css/java.css" />
-		<title> Crawler - A Simple Web Crawler. | ${chapter_name} 
+		<title> Crawler - Simple and extensible Java crawler. | ${chapter_name} 
 			
 			<#if section_name != "none">
 				-> ${section_name}
@@ -22,7 +22,7 @@
 					Crawler
 				</div>
 				<div class="slogan">
-									
+					Simple and extensible Java crawler.
 				</div>
 			</div>			
 				<#include "menu.ftl">

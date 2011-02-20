@@ -126,6 +126,16 @@
 			<organizationUrl>http://vidageek.net</organizationUrl>
 			<roles>
 				<role>Project Owner</role>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<name>Edmilson Myiasaki</name>
+			<id>emyiasaki</id>
+			<organization>AdaptIdeas</organization>
+			<organizationUrl>http://www.adaptideas.com.br</organizationUrl>
+			<roles>
+				<role>Developer</role>
 			</roles>
 		</developer>
 	</developers>

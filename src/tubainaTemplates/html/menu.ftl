@@ -5,11 +5,6 @@
 	<#list book.chapters as chap>
 		<li class="menuItem">
 			<a href="../${relative}/${dirTree[i]}">${chap.title}</a>
-			<#if i == 1> 
-				<a href="http://projetos.vidageek.net/crawler">
-					<img class="lang" src="${relative}/includes/images/en.gif" alt="Crawler (English)"/>
-				</a>
-			</#if>
 		</li>
 		<#assign i = i + 1>
 		<#list chap.sections as sec>
