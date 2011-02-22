@@ -16,7 +16,7 @@ cd $ROOT;
 mvn clean -o;
 
 #Generate english version of project's site
-mvn tubaina:build -o;
+mvn tubaina:build -o -Pen;
 
 #copy redirect file (Needed due to tubaina's structure)
 cp $UTIL_DIR/index.html $SITE_DIR/.;
