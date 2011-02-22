@@ -31,8 +31,8 @@ If you use maven to build your project, you can just add the following lines to 
 ...
 	<dependency>
 	    <groupId>net.vidageek</groupId>
-	    <artifactId>mirror</artifactId>
-	    <version>1.5</version>
+	    <artifactId>crawler</artifactId>
+	    <version>1.0</version>
 	</dependency>
 ...
 </dependencies>
