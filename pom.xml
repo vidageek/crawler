@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.vidageek</groupId>
 	<artifactId>crawler</artifactId>
-	<version>1.0</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Crawler</name>
 	<packaging>jar</packaging>
 	<description>Simple and extensible crawler.</description>
