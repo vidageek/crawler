@@ -22,7 +22,7 @@ crawler-A.B.C.jar
 [/list]
 [section Download]
 
-You can browse all Crawler releases and sources at http://maven.vidageek.net/net/vidageek/crawler 
+You can browse all Crawler releases and sources at https://oss.sonatype.org/content/groups/public/net/vidageek/crawler/ 
 or http://github.com/vidageek/crawler/downloads .
 
 If you use maven to build your project, you can just add the following lines to your pom.xml:
