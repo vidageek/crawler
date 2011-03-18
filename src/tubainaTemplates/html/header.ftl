@@ -19,7 +19,7 @@
 		<div id="page">
 			<div class="header">
 				<div class="logo">
-					Crawler
+					<img src="${relative}/includes/images/crawler.jpg" />
 				</div>
 				<div class="slogan">
 					Simple and extensible Java crawler.

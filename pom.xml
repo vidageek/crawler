@@ -169,4 +169,9 @@
 			</roles>
 		</developer>
 	</developers>
+	<contributors>
+		<contributor>
+			<name>Arvind Narasimhan</name>
+		</contributor>
+	</contributors>
 </project>
