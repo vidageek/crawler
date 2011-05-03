@@ -3,6 +3,23 @@
  */
 package net.vidageek.crawler.component;
 
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
+import net.vidageek.crawler.Page;
+import net.vidageek.crawler.Status;
+import net.vidageek.crawler.config.http.Cookie;
+import net.vidageek.crawler.exception.CrawlerException;
+import net.vidageek.crawler.page.ErrorPage;
+import net.vidageek.crawler.page.OkPage;
+import net.vidageek.crawler.page.RejectedMimeTypePage;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.log4j.Logger;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -13,25 +30,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
-
-import net.vidageek.crawler.Page;
-import net.vidageek.crawler.Status;
-import net.vidageek.crawler.config.http.Cookie;
-import net.vidageek.crawler.exception.CrawlerException;
-import net.vidageek.crawler.page.ErrorPage;
-import net.vidageek.crawler.page.OkPage;
-import net.vidageek.crawler.page.RejectedMimeTypePage;
-
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.cookie.BasicClientCookie;
-import org.apache.log4j.Logger;
-
-import com.ibm.icu.text.CharsetDetector;
-import com.ibm.icu.text.CharsetMatch;
 
 /**
  * @author jonasabreu
@@ -141,7 +139,7 @@ public class WebDownloader implements Downloader {
 				}
 			}
 		} catch (IOException e) {
-			new CrawlerException("There was a problem reading stream.", e);
+			throw new CrawlerException("There was a problem reading stream.", e);
 		}
 
 		byte[] copy = Arrays.copyOf(bytes, i);
