@@ -9,9 +9,8 @@ import net.vidageek.crawler.Page;
 import net.vidageek.crawler.Status;
 import net.vidageek.crawler.config.http.Cookie;
 import net.vidageek.crawler.exception.CrawlerException;
-import net.vidageek.crawler.page.ErrorPage;
-import net.vidageek.crawler.page.OkPage;
-import net.vidageek.crawler.page.RejectedMimeTypePage;
+import net.vidageek.crawler.page.DefaultPageFactory;
+import net.vidageek.crawler.page.PageFactory;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -43,13 +42,19 @@ public class WebDownloader implements Downloader {
 
 	private final ConcurrentLinkedQueue<Cookie> cookies;
 
+	private final PageFactory pageFactory;
+
 	public WebDownloader(final List<String> mimeTypesToInclude) {
-		this(mimeTypesToInclude, new ArrayList<Cookie>());
+		this(mimeTypesToInclude, new ArrayList<Cookie>(), new DefaultPageFactory());
 	}
 
-	public WebDownloader(final List<String> mimeTypesToInclude, final List<Cookie> cookies) {
+	public WebDownloader(final List<String> mimeTypesToInclude,
+						 final List<Cookie> cookies,
+						 final PageFactory pageFactory) {
+		
 		this.cookies = new ConcurrentLinkedQueue<Cookie>(cookies);
 		this.mimeTypesToInclude = new ConcurrentLinkedQueue<String>(mimeTypesToInclude);
+		this.pageFactory = pageFactory;
 	}
 
 	public WebDownloader() {
@@ -82,7 +87,8 @@ public class WebDownloader implements Downloader {
 				Status status = Status.fromHttpCode(response.getStatusLine().getStatusCode());
 
 				if (!acceptsMimeType(response.getLastHeader("Content-Type"))) {
-					return new RejectedMimeTypePage(url, status, response.getLastHeader("Content-Type").getValue());
+					return pageFactory.buildRejectedMimeTypePage(
+							url, status, response.getLastHeader("Content-Type").getValue());
 				}
 
 				if (Status.OK.equals(status)) {
@@ -97,9 +103,9 @@ public class WebDownloader implements Downloader {
 					Charset utf8Charset = Charset.forName("UTF-8");
 					String utf8Content = new String(utf8Charset.encode(buffer).array(), "UTF-8");
 
-					return new OkPage(url, utf8Content);
+					return pageFactory.buildOkPage(url, utf8Content);
 				}
-				return new ErrorPage(url, status);
+				return pageFactory.buildErrorPage(url, status);
 			} finally {
 				method.abort();
 			}
