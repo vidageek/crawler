@@ -14,6 +14,11 @@
 		<url>http://vidageek.net</url>
 	</organization>
 	<distributionManagement>
+		<repository>
+			<id>nexus</id>
+			<name>Integgro Nexus</name>
+			<url>http://nexus.integgro.com.br/content/repositories/releases/</url>
+		</repository>
 		<snapshotRepository>
 			<id>nexus</id>
 			<name>Integgro Nexus</name>
