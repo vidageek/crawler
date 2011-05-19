@@ -3,28 +3,20 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>net.vidageek</groupId>
 	<artifactId>crawler</artifactId>
-	<version>1.1.1</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>Crawler</name>
 	<packaging>jar</packaging>
 	<description>Simple and extensible crawler.</description>
 	<inceptionYear>2008</inceptionYear>
 	<url>http://projetos.vidageek.net/crawler</url>
+	<scm>
+		<connection>scm:git:git://github.com:vidageek/crawler.git</connection>
+		<url>git://github.com:vidageek/crawler.git</url>
+	</scm>
 	<organization>
 		<name>VidaGeek.net</name>
 		<url>http://vidageek.net</url>
 	</organization>
-	<distributionManagement>
-		<repository>
-			<id>nexus</id>
-			<name>Integgro Nexus</name>
-			<url>http://nexus.integgro.com.br/content/repositories/releases/</url>
-		</repository>
-		<snapshotRepository>
-			<id>nexus</id>
-			<name>Integgro Nexus</name>
-			<url>http://nexus.integgro.com.br/content/repositories/snapshots/</url>
-		</snapshotRepository>
-	</distributionManagement>
 	<licenses>
 		<license>
 			<distribution>repo</distribution>
