@@ -1,6 +1,7 @@
 ---
 permalink: visitor.html
 title: Visitor
+layout: doc
 ---
 
 All Visitors are runned on a multi-thread environment, so they **MUST** be Thread Safe. Don't know

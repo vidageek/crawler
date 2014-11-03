@@ -1,6 +1,7 @@
 ---
 permalink: index.html
 title: Crawler
+layout: doc
 ---
 
 Crawler is a simple Java web crawler/spider/joe or any other name you want to call it.

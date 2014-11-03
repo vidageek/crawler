@@ -1,6 +1,7 @@
 ---
 permalink: project.html
 title: Project
+layout: doc
 ---
 
 ## Versioning
