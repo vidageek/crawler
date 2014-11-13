@@ -1,5 +1,5 @@
 ---
-permalink: project.html
+permalink: /crawler/project.html
 title: Project
 layout: doc
 ---

@@ -1,5 +1,5 @@
 ---
-permalink: configuration.html
+permalink: /crawler/configuration.html
 title: Configuration
 layout: doc
 ---
