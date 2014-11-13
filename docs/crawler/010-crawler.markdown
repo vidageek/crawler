@@ -1,5 +1,4 @@
 ---
-permalink: /crawler/index.html
 title: Crawler
 layout: doc
 ---

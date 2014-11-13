@@ -1,5 +1,4 @@
 ---
-permalink: /crawler/visitor.html
 title: Visitor
 layout: doc
 ---
