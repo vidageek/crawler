@@ -1,1 +1,5 @@
 name: Crawler
+project: crawler
+organization: vidageek
+last_release: 1.0
+group_id: net/vidageek
