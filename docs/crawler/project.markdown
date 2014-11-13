@@ -1,6 +1,5 @@
 ---
 title: Project
-layout: doc
 ---
 
 ## Versioning
