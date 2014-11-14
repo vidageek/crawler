@@ -1,4 +1,5 @@
 name: Crawler
+slogan: Simple and extensible Java crawler.
 project: crawler
 organization: vidageek
 last_release: 1.0
