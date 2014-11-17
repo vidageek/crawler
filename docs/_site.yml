@@ -4,4 +4,5 @@ project: crawler
 organization: vidageek
 last_release: 1.0
 group_id: net/vidageek
+group-id: net.vidageek
 paypal: MCKWXARJ3LF3C
