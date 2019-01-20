@@ -106,6 +106,7 @@ public class WebDownloader implements Downloader {
 					try {
 						content = match.getString();
 					} catch (final UnsupportedEncodingException e) {
+						log.debug("Unsupported charset [" + match.getName() + "]. Using UTF-8.");
 						content = new String(text, "UTF-8");
 					}
 					final CharBuffer buffer = CharBuffer.wrap(content.toCharArray());
