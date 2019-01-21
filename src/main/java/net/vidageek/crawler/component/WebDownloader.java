@@ -18,6 +18,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.ContentEncodingHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.log4j.Logger;
@@ -64,7 +65,7 @@ public class WebDownloader implements Downloader {
 
 	@Override
 	public Page get(final String url) {
-		final DefaultHttpClient client = new DefaultHttpClient();
+		final DefaultHttpClient client = new ContentEncodingHttpClient();
 		for (final Cookie cookie : cookies) {
 			final String name = cookie.name();
 			final String value = cookie.value();
